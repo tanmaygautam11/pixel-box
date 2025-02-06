@@ -1,8 +1,6 @@
 import mongoose from "mongoose";
 
 const MONGODB_URI = process.env.MONGODB_URI;
-console.log("MongoDB URI:", process.env.MONGODB_URI);
-
 
 if (!MONGODB_URI) {
   throw new Error(" please define mongo environment variable");

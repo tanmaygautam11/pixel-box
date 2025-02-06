@@ -28,7 +28,7 @@ const SignIn = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [pending, setPending] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState("");
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -41,7 +41,7 @@ const SignIn = () => {
     });
     if (res?.ok) {
       router.push("/");
-      toast.success("login successful");
+      toast.success("Login successful");
     } else if (res?.status === 401) {
       setError("Invalid Credentials");
       setPending(false);
@@ -100,7 +100,7 @@ const SignIn = () => {
           <div className="flex my-2 justify-evenly mx-auto items-center">
             <Button
               disabled={false}
-              onClick={() => {}}
+              onClick={(e) => handleProvider(e, "google")}
               variant="outline"
               size="lg"
               className="bg-slate-300 hover:bg-slate-400 hover:scale-110"
