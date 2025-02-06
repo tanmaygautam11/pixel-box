@@ -22,6 +22,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { TriangleAlert } from "lucide-react";
+import { signIn } from "next-auth/react";
 
 const SignUp = () => {
   const [form, setForm] = useState({
@@ -58,6 +59,13 @@ const SignUp = () => {
     }
   }
   
+  const handleProvider = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    value: "github" | "google"
+  ) => {
+    event.preventDefault();
+    signIn(value, { callbackUrl: "/" });
+  };
   return (
     <div className="h-full flex items-center justify-center bg-[#1b0918]">
       <Card className="md:h-auto w-[80%] sm:w-[420px] p-4 sm:p-8">
@@ -128,7 +136,7 @@ const SignUp = () => {
             </Button>
             <Button
               disabled={false}
-              onClick={() => {}}
+              onClick={(e) => handleProvider(e, "github")}
               variant="outline"
               size="lg"
               className="bg-slate-300 hover:bg-slate-400 hover:scale-110"
