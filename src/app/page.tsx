@@ -1,15 +1,17 @@
 "use client";
-import { SessionProvider } from "next-auth/react";
-import UserButton from "@/components/user-button";
+import { useSession } from "next-auth/react";
+import Home from "./home/page";
+import Navbar from "@/components/Navbar";
 
-const Home = () => {
+const Page = () => {
+    const { data: session } = useSession();
+  
   return (
     <div>
-      <SessionProvider>
-        <UserButton />
-      </SessionProvider>
+      <Navbar />
+        {session ? <Home /> : <p>Not signed in</p>}
     </div>
   );
 };
 
-export default Home;
+export default Page;
