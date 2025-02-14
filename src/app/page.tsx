@@ -7,7 +7,7 @@ const Page = () => {
     const { data: session } = useSession();
   
   return (
-    <div>
+    <div className="bg-primary h-full">
       <Navbar />
         {session ? <Home /> : <p>Not signed in</p>}
     </div>
