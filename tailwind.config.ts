@@ -22,7 +22,7 @@ export default {
         },
         gray: {
           100: "#6C727F",
-          200: "#",
+          200: "#373A40",
         },
       },
       borderRadius: {

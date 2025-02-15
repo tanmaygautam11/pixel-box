@@ -1,7 +1,5 @@
 "use client";
 
-// shadcn ui
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,16 +11,16 @@ import {
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 
-//react icons
+// React Icons
 import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
+import { TriangleAlert } from "lucide-react";
 
 import Link from "next/link";
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { TriangleAlert } from "lucide-react";
 
 const SignIn = () => {
   const [email, setEmail] = useState<string>("");
@@ -52,78 +50,94 @@ const SignIn = () => {
 
   const handleProvider = (
     event: React.MouseEvent<HTMLButtonElement>,
-    value: "github" | "google"
+    provider: "github" | "google"
   ) => {
     event.preventDefault();
-    signIn(value, { callbackUrl: "/" });
+    signIn(provider, { callbackUrl: "/" });
   };
+
   return (
-    <div className="h-full flex items-center justify-center bg-[#1b0918]">
-      <Card className="md:h-auto w-[80%] sm:w-[420px] p-4 sm:p-8">
+    <div className="h-screen flex items-center justify-center bg-black">
+      <Card className="w-[90%] sm:w-[420px] p-6 sm:p-8 shadow-lg bg-gray-900 rounded-lg">
         <CardHeader>
-          <CardTitle className="text-center">Sign in</CardTitle>
-          <CardDescription className="text-sm text-center text-accent-foreground">
-            Use email or service, to sign in
+          <CardTitle className="text-center text-white text-2xl font-bold">
+            Sign In
+          </CardTitle>
+          <CardDescription className="text-sm text-center text-gray-400">
+            Use your email or a provider to sign in
           </CardDescription>
         </CardHeader>
+
+        {/* Error Message */}
         {!!error && (
-          <div className="bg-destructive/15 p-3 rounded-md flex items-center gap-x-2 text-sm text-destructive mb-6">
+          <div className="bg-red-500/20 border border-red-500 text-red-400 px-4 py-3 rounded-md flex items-center gap-x-2 text-sm mb-6">
             <TriangleAlert />
             <p>{error}</p>
           </div>
         )}
+
         <CardContent className="px-2 sm:px-6">
-          <form onSubmit={handleSubmit} className="space-y-3">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <Input
               type="email"
               disabled={pending}
-              placeholder="Email"
+              placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              className="border-gray-700 bg-gray-800 text-white focus:border-gray-500 focus:ring focus:ring-gray-600 transition-all duration-300 rounded-md"
             />
             <Input
               type="password"
               disabled={pending}
-              placeholder="Password"
+              placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              className="border-gray-700 bg-gray-800 text-white focus:border-gray-500 focus:ring focus:ring-gray-600 transition-all duration-300 rounded-md"
             />
-            <Button className="w-full" size="lg" disabled={pending}>
+            <Button
+              className="w-full bg-gray-700 hover:bg-gray-600 text-white font-semibold text-lg py-3 rounded-md transition-all duration-300"
+              size="lg"
+              disabled={pending}
+            >
               Continue
             </Button>
           </form>
 
-          <Separator />
+          <Separator className="my-4 bg-gray-700" />
 
-          <div className="flex my-2 justify-evenly mx-auto items-center">
+          {/* Social Login Buttons */}
+          <div className="flex flex-col space-y-3">
             <Button
-              disabled={false}
               onClick={(e) => handleProvider(e, "google")}
               variant="outline"
               size="lg"
-              className="bg-slate-300 hover:bg-slate-400 hover:scale-110"
+              className="w-full flex items-center justify-center bg-gray-800 hover:bg-gray-700 text-white py-2 rounded-md transition-all duration-300"
             >
-              <FcGoogle className="size-8 left-2.5 top-2.5" />
+              <FcGoogle className="size-6 mr-2" />
+              Sign in with Google
             </Button>
+
             <Button
-              disabled={false}
               onClick={(e) => handleProvider(e, "github")}
               variant="outline"
               size="lg"
-              className="bg-slate-300 hover:bg-slate-400 hover:scale-110"
+              className="w-full flex items-center justify-center bg-gray-800 hover:bg-gray-700 text-white py-2 rounded-md transition-all duration-300"
             >
-              <FaGithub className="size-8 left-2.5 top-2.5" />
+              <FaGithub className="size-6 mr-2" />
+              Sign in with GitHub
             </Button>
           </div>
-          <p className="text-center text-sm mt-2 text-muted-foreground">
-            Create new account
+
+          {/* Sign Up Link */}
+          <p className="text-center text-sm mt-4 text-gray-400">
+            Dont have an account?{" "}
             <Link
-              className="text-sky-700 ml-4 hover:underline cursor-pointer"
-              href="sign-up"
+              className="text-gray-300 hover:underline cursor-pointer"
+              href="/sign-up"
             >
-              Sign Up{" "}
+              Sign Up
             </Link>
           </p>
         </CardContent>

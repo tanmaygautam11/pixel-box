@@ -1,7 +1,8 @@
 "use client";
 import { useSession } from "next-auth/react";
-import Home from "./home/page";
+import Home from "./Home";
 import Navbar from "@/components/Navbar";
+import Landing from "./Landing";
 
 const Page = () => {
     const { data: session } = useSession();
@@ -9,7 +10,7 @@ const Page = () => {
   return (
     <div className="bg-primary h-full">
       <Navbar />
-        {session ? <Home /> : <p>Not signed in</p>}
+        {session ? <Home /> : <Landing />}
     </div>
   );
 };
