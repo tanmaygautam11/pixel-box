@@ -8,11 +8,11 @@ const Landing = () => {
   return (
     <>
       <section className="flex justify-center items-center h-[50%] flex-col">
-        <div className="flex flex-col items-center space-y-4">
-          <h1 className="text-5xl font-semibold">
+        <div className="flex flex-col items-center space-y-4 mx-2">
+          <h1 className="text-2xl text-center font-semibold sm:text-[1.75rem] md:text-[2.2rem] lg:text-[2.5rem] xl:text-[2.75rem]">
             Welcome to the Ultimate Wallpaper Collection
           </h1>
-          <p className="text-lg w-4/5 text-center">
+          <p className="text-md text-center sm:text-lg sm:w-4/5">
             Discover stunning wallpapers for your desktop, phone, or tablet.
             Browse through thousands of high-quality images to find the perfect
             background for your device.
