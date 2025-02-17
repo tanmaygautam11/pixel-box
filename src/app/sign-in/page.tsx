@@ -57,20 +57,19 @@ const SignIn = () => {
   };
 
   return (
-    <div className="h-screen flex items-center justify-center bg-black">
-      <Card className="w-[90%] sm:w-[420px] p-6 sm:p-8 shadow-lg bg-gray-900 rounded-lg">
+    <div className="min-h-screen flex items-center justify-center bg-primary px-4 sm:px-0">
+      <Card className="w-full max-w-sm sm:max-w-md md:max-w-lg p-6 sm:p-8 shadow-lg bg-secondary rounded-[6px] border border-zinc-400">
         <CardHeader>
-          <CardTitle className="text-center text-white text-2xl font-bold">
+          <CardTitle className="text-center text-black-100 text-2xl font-bold">
             Sign In
           </CardTitle>
-          <CardDescription className="text-sm text-center text-gray-400">
+          <CardDescription className="text-sm text-center text-gray-100">
             Use your email or a provider to sign in
           </CardDescription>
         </CardHeader>
 
-        {/* Error Message */}
         {!!error && (
-          <div className="bg-red-500/20 border border-red-500 text-red-400 px-4 py-3 rounded-md flex items-center gap-x-2 text-sm mb-6">
+          <div className="bg-red-500/20 border border-red-500 text-red-400 px-4 py-3 rounded-[6px] flex items-center gap-x-2 text-sm mb-6">
             <TriangleAlert />
             <p>{error}</p>
           </div>
@@ -85,7 +84,7 @@ const SignIn = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="border-gray-700 bg-gray-800 text-white focus:border-gray-500 focus:ring focus:ring-gray-600 transition-all duration-300 rounded-md"
+              className="border-zinc-400 bg-primary focus:border-gray-500 focus:ring focus:ring-zinc-300 transition-all duration-200 rounded-[6px]"
             />
             <Input
               type="password"
@@ -94,10 +93,10 @@ const SignIn = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="border-gray-700 bg-gray-800 text-white focus:border-gray-500 focus:ring focus:ring-gray-600 transition-all duration-300 rounded-md"
+              className="border-zinc-400 bg-primary focus:border-gray-500 focus:ring focus:ring-zinc-300 transition-all duration-300 rounded-[6px]"
             />
             <Button
-              className="w-full bg-gray-700 hover:bg-gray-600 text-white font-semibold text-lg py-3 rounded-md transition-all duration-300"
+              className="w-full bg-black-100 hover:bg-gray-200 text-white font-semibold text-lg py-3 rounded-3xl transition-all duration-300"
               size="lg"
               disabled={pending}
             >
@@ -105,15 +104,14 @@ const SignIn = () => {
             </Button>
           </form>
 
-          <Separator className="my-4 bg-gray-700" />
+          <Separator className="my-4 bg-black-100" />
 
-          {/* Social Login Buttons */}
           <div className="flex flex-col space-y-3">
             <Button
               onClick={(e) => handleProvider(e, "google")}
               variant="outline"
               size="lg"
-              className="w-full flex items-center justify-center bg-gray-800 hover:bg-gray-700 text-white py-2 rounded-md transition-all duration-300"
+              className="w-full flex items-center justify-center bg-primary hover:bg-zinc-200 text-black-100 py-2 rounded-[6px] transition-all duration-300 border-zinc-400"
             >
               <FcGoogle className="size-6 mr-2" />
               Sign in with Google
@@ -123,18 +121,17 @@ const SignIn = () => {
               onClick={(e) => handleProvider(e, "github")}
               variant="outline"
               size="lg"
-              className="w-full flex items-center justify-center bg-gray-800 hover:bg-gray-700 text-white py-2 rounded-md transition-all duration-300"
+              className="w-full flex items-center justify-center bg-gray-800 hover:bg-gray-700 text-white py-2 rounded-[6px] transition-all duration-300 border-zinc-400"
             >
               <FaGithub className="size-6 mr-2" />
               Sign in with GitHub
             </Button>
           </div>
 
-          {/* Sign Up Link */}
-          <p className="text-center text-sm mt-4 text-gray-400">
-            Dont have an account?{" "}
+          <p className="text-center text-sm mt-4 text-gray-100">
+            Don&#39;t have an account?{" "}
             <Link
-              className="text-gray-300 hover:underline cursor-pointer"
+              className="text-black-100 hover:underline cursor-pointer"
               href="/sign-up"
             >
               Sign Up

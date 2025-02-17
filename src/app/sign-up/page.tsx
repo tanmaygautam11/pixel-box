@@ -67,22 +67,26 @@ const SignUp = () => {
     signIn(value, { callbackUrl: "/" });
   };
   return (
-    <div className="h-full flex items-center justify-center bg-[#1b0918]">
-      <Card className="md:h-auto w-[80%] sm:w-[420px] p-4 sm:p-8">
+    <div className="min-h-screen flex items-center justify-center bg-primary px-4 sm:px-0">
+      <Card className="w-full max-w-sm sm:max-w-md md:max-w-lg p-6 sm:p-8 shadow-lg bg-secondary rounded-[6px] border border-zinc-400">
         <CardHeader>
-          <CardTitle className="text-center">Sign up</CardTitle>
-          <CardDescription className="text-sm text-center text-accent-foreground">
-            Use email or service, to create account
+          <CardTitle className="text-center text-black-100 text-2xl font-bold">
+            Sign Up
+          </CardTitle>
+          <CardDescription className="text-sm text-center text-gray-100">
+            Use email or a provider to create an account
           </CardDescription>
         </CardHeader>
+
         {!!error && (
-          <div className="bg-destructive/15 p-3 rounded-md flex items-center gap-x-2 text-sm text-destructive mb-6">
+          <div className="bg-red-500/20 border border-red-500 text-red-400 px-4 py-3 rounded-[6px] flex items-center gap-x-2 text-sm mb-6">
             <TriangleAlert />
             <p>{error}</p>
           </div>
         )}
+
         <CardContent className="px-2 sm:px-6">
-          <form onSubmit={handleSubmit} className="space-y-3">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <Input
               type="text"
               disabled={pending}
@@ -90,6 +94,7 @@ const SignUp = () => {
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               required
+              className="border-zinc-400 bg-primary focus:border-gray-500 focus:ring focus:ring-zinc-300 transition-all duration-200 rounded-[6px]"
             />
             <Input
               type="email"
@@ -98,6 +103,7 @@ const SignUp = () => {
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
               required
+              className="border-zinc-400 bg-primary focus:border-gray-500 focus:ring focus:ring-zinc-300 transition-all duration-200 rounded-[6px]"
             />
             <Input
               type="password"
@@ -106,6 +112,7 @@ const SignUp = () => {
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
               required
+              className="border-zinc-400 bg-primary focus:border-gray-500 focus:ring focus:ring-zinc-300 transition-all duration-300 rounded-[6px]"
             />
             <Input
               type="password"
@@ -116,41 +123,46 @@ const SignUp = () => {
                 setForm({ ...form, confirmPassword: e.target.value })
               }
               required
+              className="border-zinc-400 bg-primary focus:border-gray-500 focus:ring focus:ring-zinc-300 transition-all duration-300 rounded-[6px]"
             />
-            <Button className="w-full" size="lg" disabled={pending}>
+            <Button
+              className="w-full bg-black-100 hover:bg-gray-200 text-white font-semibold text-lg py-3 rounded-3xl transition-all duration-300"
+              size="lg"
+              disabled={pending}
+            >
               Continue
             </Button>
           </form>
 
-          <Separator />
+          <Separator className="my-4 bg-black-100" />
 
-          <div className="flex my-2 justify-evenly mx-auto items-center">
+          <div className="flex justify-evenly flex-col space-y-3">
             <Button
-              disabled={false}
               onClick={(e) => handleProvider(e, "google")}
               variant="outline"
               size="lg"
-              className="bg-slate-300 hover:bg-slate-400 hover:scale-110"
+              className="bg-primary hover:bg-zinc-200 text-black-100 py-2 rounded-[6px] transition-all duration-300 border-zinc-400"
             >
-              <FcGoogle className="size-8 left-2.5 top-2.5" />
+              <FcGoogle className="size-6" />
+              Sign up with Google
             </Button>
             <Button
-              disabled={false}
               onClick={(e) => handleProvider(e, "github")}
               variant="outline"
               size="lg"
-              className="bg-slate-300 hover:bg-slate-400 hover:scale-110"
+              className="bg-gray-800 hover:bg-gray-700 text-white py-2 rounded-[6px] transition-all duration-300 border-zinc-400"
             >
-              <FaGithub className="size-8 left-2.5 top-2.5" />
+              <FaGithub className="size-6" />
+              Sign up with GitHub
             </Button>
           </div>
-          <p className="text-center text-sm mt-2 text-muted-foreground">
-            Already have an account?
+          <p className="text-center text-sm mt-4 text-gray-100">
+            Already have an account?{" "}
             <Link
-              className="text-sky-700 ml-4 hover:underline cursor-pointer"
-              href="sign-in"
+              className="text-black-100 hover:underline cursor-pointer"
+              href="/sign-in"
             >
-              Sign in{" "}
+              Sign In
             </Link>
           </p>
         </CardContent>
