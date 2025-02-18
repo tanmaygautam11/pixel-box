@@ -44,7 +44,7 @@ const Navbar: React.FC = () => {
     }`;
 
   return (
-    <nav className="border-[1.8px] border-secondary-100">
+    <nav className="border-[1.8px] border-secondary-100 fixed w-full">
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
         <div className="relative flex h-16 items-center justify-between">
           {/* Mobile menu toggle – only when logged in */}
@@ -153,7 +153,7 @@ const Navbar: React.FC = () => {
               <Loader className="h-6 mr-4 mt-4 float-right animate-spin" />
             ) : session ? (
               <DropdownMenu modal={false}>
-                <DropdownMenuTrigger className="outline-none relative md:p-8">
+                <DropdownMenuTrigger className="outline-none relative">
                   <div className="flex gap-4 items-center">
                     <Avatar className="h-10 w-10 hover:opacity-75 transition">
                       <AvatarImage

@@ -7,7 +7,7 @@ import InfiniteCarousel from "../../components/InfiniteCarousel";
 const Landing = () => {
   return (
     <>
-      <section className="flex justify-center items-center h-[50%] flex-col">
+      <section className="flex justify-center items-center h-[58%] flex-col">
         <div className="flex flex-col items-center space-y-4 mx-2">
           <h1 className="text-2xl text-center font-semibold sm:text-[1.75rem] md:text-[2.2rem] lg:text-[2.5rem] xl:text-[2.75rem]">
             Welcome to the Ultimate Wallpaper Collection
