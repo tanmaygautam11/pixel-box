@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -38,8 +39,8 @@ const Navbar: React.FC = () => {
   const navLinkClasses = (href: string) =>
     `rounded-md px-3 py-2 text-sm font-medium ${
       pathname === href
-        ? "border-b-2 border-secondary text-black-100" // Active: underline in secondary color & primary text
-        : "text-gray-100 hover:text-black-100" // Inactive: light text, hover to primary
+        ? "border-b-2 border-zinc-300 text-black-100" // Active: underline in secondary color & primary text
+        : "text-gray-100 hover:text-zinc-600 hover:border-b-2 border-secondary" // Inactive: light text, hover to primary
     }`;
 
   return (
@@ -51,7 +52,7 @@ const Navbar: React.FC = () => {
             <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
               <button
                 type="button"
-                className="relative inline-flex items-center justify-center rounded-md p-2 text-gray-100 hover:bg-gray-100 hover:text-black-200 focus:ring-2 focus:ring-white focus:outline-none focus:ring-inset"
+                className="relative inline-flex items-center justify-center rounded-[6px] p-2 text-gray-100 hover:bg-secondary-100 hover:text-black-200 focus:ring-2 focus:ring-white focus:outline-none focus:ring-inset"
                 aria-controls="mobile-menu"
                 aria-expanded={mobileMenuOpen}
                 onClick={toggleMobileMenu}
@@ -96,40 +97,24 @@ const Navbar: React.FC = () => {
           {/* Logo and navigation links */}
           <div
             className={`flex flex-1 items-center ${
-              session ? "justify-center sm:justify-start" : "justify-start"
+              session ? "justify-evenly sm:justify-start" : "justify-start"
             }`}
           >
             <div className="flex shrink-0 items-center">
               <Link href="/">
                 {session ? (
                   // If logged in, always use the full logo even on small devices.
-                  <Image
-                    src={FullLogo}
-                    alt="logo"
-                    width={32}
-                    height={32}
-                    className="h-8 w-auto"
-                  />
+                  <div className="relative w-36 h-16">
+                    <Image src={FullLogo} alt="logo" fill />
+                  </div>
                 ) : (
                   <>
                     {/* When logged out, show the small logo on mobile, full logo on larger screens */}
-                    <div className="block sm:hidden">
-                      <Image
-                        src={Logo}
-                        alt="logo"
-                        width={32}
-                        height={32}
-                        className="h-8 w-auto"
-                      />
+                    <div className="block sm:hidden relative w-12 h-12">
+                      <Image src={Logo} alt="logo" fill />
                     </div>
-                    <div className="hidden sm:block">
-                      <Image
-                        src={FullLogo}
-                        alt="logo"
-                        width={32}
-                        height={32}
-                        className="h-8 w-auto"
-                      />
+                    <div className="hidden sm:block relative w-36 h-16">
+                      <Image src={FullLogo} alt="logo" fill />
                     </div>
                   </>
                 )}
@@ -140,22 +125,22 @@ const Navbar: React.FC = () => {
               <div className="hidden sm:ml-6 sm:block">
                 <div className="flex space-x-4">
                   <Link href="/" className={navLinkClasses("/")}>
-                    Dashboard
-                  </Link>
-                  <Link href="/team" className={navLinkClasses("/team")}>
-                    Team
+                    Home
                   </Link>
                   <Link
-                    href="/projects"
-                    className={navLinkClasses("/projects")}
+                    href="/collections"
+                    className={navLinkClasses("/collections")}
                   >
-                    Projects
+                    Collections
                   </Link>
                   <Link
-                    href="/calendar"
-                    className={navLinkClasses("/calendar")}
+                    href="/trending"
+                    className={navLinkClasses("/trending")}
                   >
-                    Calendar
+                    Trending
+                  </Link>
+                  <Link href="/latest" className={navLinkClasses("/latest")}>
+                    Latest
                   </Link>
                 </div>
               </div>
@@ -163,30 +148,31 @@ const Navbar: React.FC = () => {
           </div>
 
           {/* Right side: User controls (logged in) or Sign in/Sign up (logged out) */}
-          <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+          <div className="absolute inset-y-0 right-0 flex items-center sm:static sm:inset-auto sm:ml-6 sm:pr-0">
             {status === "loading" ? (
               <Loader className="h-6 mr-4 mt-4 float-right animate-spin" />
             ) : session ? (
               <DropdownMenu modal={false}>
-                <DropdownMenuTrigger className="outline-none relative p-4 md:p-8">
+                <DropdownMenuTrigger className="outline-none relative md:p-8">
                   <div className="flex gap-4 items-center">
                     <Avatar className="h-10 w-10 hover:opacity-75 transition">
                       <AvatarImage
                         className="h-10 w-10 hover:opacity-75 transition"
                         src={session.user?.image || undefined}
                       />
-                      <AvatarFallback className="bg-secondary text-black-100">
-                        {avatarFallback}
-                      </AvatarFallback>
+                      <AvatarFallback>{avatarFallback}</AvatarFallback>
                     </Avatar>
                   </div>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   align="center"
                   side="bottom"
-                  className="w-50"
+                  className="w-50 bg-primary rounded-[6px] border-2 border-secondary-100 hover:bg-secondary-100"
                 >
-                  <DropdownMenuItem className="h-10" onClick={handleSignOut}>
+                  <DropdownMenuItem
+                    className="h-10 text-gray-100 hover:text-black-100"
+                    onClick={handleSignOut}
+                  >
                     Log out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -225,45 +211,45 @@ const Navbar: React.FC = () => {
               href="/"
               className={`block rounded-md px-3 py-2 text-base font-medium ${
                 pathname === "/"
-                  ? "border-b-2 border-secondary text-black-100"
-                  : "text-gray-100 hover:text-black-100"
+                  ? "border-b-2 border-zinc-300 text-black-100"
+                  : "text-gray-100 hover:text-zinc-600 hover:border-b-2 border-secondary"
               }`}
               aria-current={pathname === "/" ? "page" : undefined}
             >
-              Dashboard
+              Home
             </Link>
             <Link
-              href="/team"
+              href="/collections"
               className={`block rounded-md px-3 py-2 text-base font-medium ${
-                pathname === "/team"
-                  ? "border-b-2 border-secondary text-black-100"
-                  : "text-gray-100 hover:text-black-100"
+                pathname === "/collections"
+                  ? "border-b-2 border-zinc-300 text-black-100"
+                  : "text-gray-100 hover:text-zinc-600 hover:border-b-2 border-secondary"
               }`}
-              aria-current={pathname === "/team" ? "page" : undefined}
+              aria-current={pathname === "/collections" ? "page" : undefined}
             >
-              Team
+              Collections
             </Link>
             <Link
-              href="/projects"
+              href="/trending"
               className={`block rounded-md px-3 py-2 text-base font-medium ${
-                pathname === "/projects"
-                  ? "border-b-2 border-secondary text-black-100"
-                  : "text-gray-100 hover:text-black-100"
+                pathname === "/trending"
+                  ? "border-b-2 border-zinc-300 text-black-100"
+                  : "text-gray-100 hover:text-zinc-600 hover:border-b-2 border-secondary"
               }`}
-              aria-current={pathname === "/projects" ? "page" : undefined}
+              aria-current={pathname === "/trending" ? "page" : undefined}
             >
-              Projects
+              Trending
             </Link>
             <Link
-              href="/calendar"
+              href="/latest"
               className={`block rounded-md px-3 py-2 text-base font-medium ${
-                pathname === "/calendar"
-                  ? "border-b-2 border-secondary text-black-100"
-                  : "text-gray-100 hover:text-black-100"
+                pathname === "/latest"
+                  ? "border-b-2 border-zinc-300 text-black-100"
+                  : "text-gray-100 hover:text-zinc-600 hover:border-b-2 border-secondary"
               }`}
-              aria-current={pathname === "/calendar" ? "page" : undefined}
+              aria-current={pathname === "/latest" ? "page" : undefined}
             >
-              Calendar
+              Latest
             </Link>
           </div>
         </div>
