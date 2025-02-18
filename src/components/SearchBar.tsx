@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Search from "../../public/icons/Search.svg";
@@ -8,14 +8,19 @@ import Image from "next/image";
 
 interface SearchBarProps {
   onSearch: (query: string) => void;
+  initialQuery: string; // New prop to pass the query value
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
-  const [query, setQuery] = useState("");
+const SearchBar: React.FC<SearchBarProps> = ({ onSearch, initialQuery }) => {
+  const [query, setQuery] = useState(initialQuery);
+
+  useEffect(() => {
+    setQuery(initialQuery); // Update query if initialQuery prop changes
+  }, [initialQuery]);
 
   const handleSearch = () => {
     if (query.trim()) {
-      onSearch(query);
+      onSearch(query); // Pass the query to the parent component
     }
   };
 
@@ -23,9 +28,9 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
     <div className="flex items-center gap-2 p-4 text-gray-200 bg-white shadow-md rounded-xl w-full">
       <Input
         type="text"
-        placeholder="Enter your keywords..."
         value={query}
         onChange={(e) => setQuery(e.target.value)}
+        placeholder="Enter your keywords..."
         className="flex-1 border-none rounded-[8px] focus-visible:ring-0 focus-visible:ring-offset-0"
         onKeyDown={(e) => e.key === "Enter" && handleSearch()}
       />
