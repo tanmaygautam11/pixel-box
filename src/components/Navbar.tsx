@@ -44,7 +44,7 @@ const Navbar: React.FC = () => {
     }`;
 
   return (
-    <nav className="border-[1.8px] bg-primary border-secondary-100 fixed w-full">
+    <nav className="border-[1.8px] bg-primary border-secondary-100 fixed w-full z-10">
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
         <div className="relative flex h-16 items-center justify-between">
           {/* Mobile menu toggle – only when logged in */}

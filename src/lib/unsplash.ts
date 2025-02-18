@@ -10,9 +10,9 @@ if (!UNSPLASH_ACCESS_KEY) {
  * @param count - Number of images to fetch.
  * @returns An array of Unsplash photo objects or null on error.
  */
-export const fetchImages = async (query: string, count: number = 10) => {
+export const fetchImages = async (query: string, count: number = 30) => {
   try {
-    const url = `https://api.unsplash.com/search/photos?query=${query}&per_page=${count}&orientation=landscape`;
+    const url = `https://api.unsplash.com/search/photos?query=${query}&per_page=${count}`;
     const response = await fetch(url, {
       headers: {
         Authorization: `Client-ID ${UNSPLASH_ACCESS_KEY}`,
