@@ -6,6 +6,7 @@ import Image from "next/image";
 import { fetchImages } from "../../../lib/unsplash"; // Ensure this path is correct
 import SearchBar from "@/components/SearchBar"; // Ensure this path is correct
 import Gradient from "../../../../public/images/gradiend-bg@2x.png"; // Ensure this path is correct
+import ImageGallery from "@/components/ImageGallery";
 
 interface UnsplashImage {
   id: string;
@@ -89,39 +90,7 @@ const SearchPage = () => {
         </p>
       ) : (
         // Using a CSS columns layout for a masonry effect
-        <div className="px-12 mt-4 columns-1 sm:columns-2 md:columns-3 lg:columns-4">
-          {images.map((img) => (
-            <div
-              key={img.id}
-              className="break-inside-avoid mb-4 relative rounded-[6px] overflow-hidden shadow-lg group"
-            >
-              <div className="relative w-full">
-                <Image
-                  src={img.urls.regular || img.urls.small}
-                  alt={img.alt_description || "Image from Unsplash"}
-                  width={400}
-                  height={Math.round((img.height / img.width) * 400)}
-                  sizes="100vw"
-                  style={{ objectFit: "cover", width: "100%", height: "auto" }}
-                  className="transition-all duration-300 transform group-hover:scale-105"
-                  priority
-                />
-                <div className="flex items-center absolute bottom-0 left-0 w-full bg-gradient-to-t from-black-100 via-transparent to-transparent text-white p-2 text-sm opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="w-8 h-8 mr-2 rounded-full overflow-hidden">
-                    <Image
-                      src={img.user.profile_image.small}
-                      alt={`${img.user.name}'s profile`}
-                      width={32}
-                      height={32}
-                      className="object-cover"
-                    />
-                  </div>
-                  <p>{img.user.name}</p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+        <ImageGallery images={images as UnsplashImage[]} />
       )}
     </div>
   );
