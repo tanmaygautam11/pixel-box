@@ -13,7 +13,7 @@ const Home = () => {
   const [images, setImages] = useState<UnsplashImage[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [page, setPage] = useState(1); // Track page number for "Load More"
+  const [page, setPage] = useState(1);
   const [fetchedImageIds, setFetchedImageIds] = useState<Set<string>>(
     new Set()
   );
@@ -34,8 +34,8 @@ const Home = () => {
         try {
           const fetchedImages = await fetchAllImages("popular", 30, 5, 1);
           if (fetchedImages) {
-            setImages(fetchedImages); // Set initial images
-            setFetchedImageIds(new Set(fetchedImages.map((img) => img.id))); // Store the ids of fetched images
+            setImages(fetchedImages);
+            setFetchedImageIds(new Set(fetchedImages.map((img) => img.id)));
           }
         } catch (error) {
           console.error("Error loading images on Home page", error);
@@ -55,22 +55,21 @@ const Home = () => {
         30,
         5,
         newPage,
-        images // Pass current images to prevent duplicates
+        images
       );
 
       if (moreImages && moreImages.length > 0) {
-        // Filter out images that have already been fetched
         const newImages = moreImages.filter(
           (img) => !fetchedImageIds.has(img.id)
         );
 
         if (newImages.length > 0) {
-          setImages((prevImages) => [...prevImages, ...newImages]); // Append new images
+          setImages((prevImages) => [...prevImages, ...newImages]);
           setFetchedImageIds(
             (prevSet) =>
               new Set([...prevSet, ...newImages.map((img) => img.id)])
-          ); // Update fetched image ids
-          setPage(newPage); // Increment page number
+          );
+          setPage(newPage);
         }
       }
     } catch (error) {

@@ -21,9 +21,7 @@ export interface UnsplashImage {
 
 interface ImageGalleryProps {
   images: UnsplashImage[];
-  /** Callback function to load more images */
   onLoadMore?: () => void;
-  /** Flag to indicate if more images are currently loading */
   isLoadingMore?: boolean;
 }
 
@@ -38,7 +36,6 @@ const ImageGallery = ({
 
   return (
     <div className="w-full">
-      {/* Using grid for masonry-like layout */}
       <div className="px-12 mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {images.map((img) => {
           const imageHeight = Math.round((img.height / img.width) * 400);
@@ -47,7 +44,7 @@ const ImageGallery = ({
               key={img.id}
               className="relative mb-4 rounded-[6px] overflow-hidden shadow-lg group"
               style={{
-                gridRowEnd: `span ${Math.ceil(imageHeight / 100)}`, // Dynamically adjusting row span based on height
+                gridRowEnd: `span ${Math.ceil(imageHeight / 100)}`,
               }}
             >
               <div className="relative w-full h-full">
@@ -60,7 +57,7 @@ const ImageGallery = ({
                   style={{
                     objectFit: "cover",
                     width: "100%",
-                    height: "100%", // Ensure image fills the entire parent div
+                    height: "100%",
                   }}
                   className="transition-all duration-300 transform group-hover:scale-105"
                 />
@@ -82,7 +79,6 @@ const ImageGallery = ({
         })}
       </div>
 
-      {/* Load More Button */}
       {onLoadMore && (
         <div className="flex justify-center mt-6">
           <button

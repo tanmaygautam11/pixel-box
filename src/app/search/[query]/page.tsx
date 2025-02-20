@@ -1,56 +1,41 @@
+// SearchPage.tsx
 "use client";
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import { fetchImages } from "../../../lib/unsplash"; // Ensure this path is correct
-import SearchBar from "@/components/SearchBar"; // Ensure this path is correct
-import Gradient from "../../../../public/images/gradiend-bg@2x.png"; // Ensure this path is correct
+import { fetchAllImages } from "../../../lib/unsplash";
+import SearchBar from "@/components/SearchBar";
+import Gradient from "../../../../public/images/gradiend-bg@2x.png";
 import ImageGallery from "@/components/ImageGallery";
-
-interface UnsplashImage {
-  id: string;
-  urls: {
-    regular: string;
-    small: string;
-  };
-  width: number;
-  height: number;
-  alt_description: string | null;
-  user: {
-    name: string;
-    profile_image: {
-      small: string;
-    };
-  };
-}
+import { UnsplashImage } from "@/components/ImageGallery";
 
 const SearchPage = () => {
   const { query } = useParams<{ query: string | string[] }>();
   const router = useRouter();
   const [images, setImages] = useState<UnsplashImage[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [loadingMore, setLoadingMore] = useState<boolean>(false);
+  const [page, setPage] = useState<number>(1);
+  const [fetchedImageIds, setFetchedImageIds] = useState<Set<string>>(
+    new Set()
+  );
 
-  // Function to decode the query parameter
   const getDecodedQuery = () => {
     if (!query) return "";
-    if (Array.isArray(query)) {
-      return query.map((q) => decodeURIComponent(q)).join(" ");
-    }
-    return decodeURIComponent(query);
+    return Array.isArray(query)
+      ? query.map((q) => decodeURIComponent(q)).join(" ")
+      : decodeURIComponent(query);
   };
 
   useEffect(() => {
     const fetchSearchResults = async () => {
       if (query) {
         try {
-          const results = await fetchImages(
-            Array.isArray(query) ? query.join(" ") : query
-          );
-          if (results && Array.isArray(results)) {
+          const results = await fetchAllImages(getDecodedQuery(), 30, 5, 1);
+          if (results) {
             setImages(results);
-          } else {
-            console.error("Failed to fetch images.");
+            setFetchedImageIds(new Set(results.map((img) => img.id)));
           }
         } catch (error) {
           console.error("Error fetching images:", error);
@@ -60,10 +45,38 @@ const SearchPage = () => {
     };
 
     fetchSearchResults();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
 
-  const handleSearch = (newQuery: string) => {
-    router.push(`/search/${newQuery}`);
+  const loadMoreImages = async () => {
+    setLoadingMore(true);
+    try {
+      const newPage = page + 1;
+      const moreImages = await fetchAllImages(
+        getDecodedQuery(),
+        30,
+        5,
+        newPage,
+        images
+      );
+
+      if (moreImages) {
+        const newImages = moreImages.filter(
+          (img) => !fetchedImageIds.has(img.id)
+        );
+        if (newImages.length > 0) {
+          setImages((prev) => [...prev, ...newImages]);
+          setFetchedImageIds(
+            (prevSet) =>
+              new Set([...prevSet, ...newImages.map((img) => img.id)])
+          );
+          setPage(newPage);
+        }
+      }
+    } catch (error) {
+      console.error("Error loading more images", error);
+    }
+    setLoadingMore(false);
   };
 
   const decodedQuery = getDecodedQuery();
@@ -75,7 +88,10 @@ const SearchPage = () => {
           <Image src={Gradient} alt="gradient image" fill />
         </div>
         <div className="flex justify-center w-3/5 h-14 relative bottom-8">
-          <SearchBar onSearch={handleSearch} initialQuery={decodedQuery} />
+          <SearchBar
+            onSearch={(newQuery) => router.push(`/search/${newQuery}`)}
+            initialQuery={decodedQuery}
+          />
         </div>
       </div>
 
@@ -89,8 +105,11 @@ const SearchPage = () => {
           No results found for {decodedQuery}
         </p>
       ) : (
-        // Using a CSS columns layout for a masonry effect
-        <ImageGallery images={images as UnsplashImage[]} />
+        <ImageGallery
+          images={images}
+          onLoadMore={loadMoreImages}
+          isLoadingMore={loadingMore}
+        />
       )}
     </div>
   );
