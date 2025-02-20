@@ -94,3 +94,24 @@ export const fetchAllImages = async (
     return null;
   }
 };
+export const fetchPhotoDetails = async (photoId: string) => {
+  try {
+    const url = `https://api.unsplash.com/photos/${photoId}`;
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Client-ID ${UNSPLASH_ACCESS_KEY}`,
+        Accept: "application/json",
+        "Accept-Version": "v1",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch photo details: ${response.statusText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching photo details:", error);
+    return null;
+  }
+};
