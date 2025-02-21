@@ -1,80 +1,81 @@
-import NextAuth from "next-auth";
-import User from "@/models/user";
+import NextAuth, { NextAuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import GithubProvider from "next-auth/providers/github";
+import GoogleProvider from "next-auth/providers/google";
+import User, { IUser } from "@/models/user";
 import connectToDatabase from "@/lib/mongodb";
 import bcrypt from "bcryptjs";
-import CredentialsProvider from "next-auth/providers/credentials";
-import Github from "next-auth/providers/github";
-import Google from "next-auth/providers/google";
 
-const handler = NextAuth({
+export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
   },
   providers: [
-    Github({
+    GithubProvider({
       clientId: process.env.GITHUB_ID as string,
       clientSecret: process.env.GITHUB_SECRET as string,
     }),
-    Google({
+    GoogleProvider({
       clientId: process.env.GOOGLE_ID as string,
       clientSecret: process.env.GOOGLE_SECRET as string,
     }),
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email: {},
-        password: {},
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        try {
-          await connectToDatabase();
-          const user = await User.findOne({ email: credentials?.email });
-          if (!user) {
-            throw new Error("");
-          }
-          const isValidPassword = await bcrypt.compare(
-            credentials?.password ?? "",
-            user.password as string
-          );
-          if (!isValidPassword) {
-            throw new Error("");
-          }
-          return user;
-        } catch {
-          return null;
+        await connectToDatabase();
+        const user = (await User.findOne({
+          email: credentials?.email,
+        })) as IUser | null;
+
+        if (!user) {
+          throw new Error("User not found");
         }
+
+        const isValidPassword = await bcrypt.compare(
+          credentials?.password ?? "",
+          user.password as string
+        );
+
+        if (!isValidPassword) {
+          throw new Error("Invalid password");
+        }
+
+        return {
+          id: user._id.toString(),
+          email: user.email,
+          name: user.name,
+          image: user.image,
+        }; // ✅ Return user object with required properties
       },
     }),
   ],
   callbacks: {
-    async signIn({ account, profile }) {
-      if (account?.provider === "github" || account?.provider === "google") {
-        await connectToDatabase();
-        const existingUser = await User.findOne({ email: profile?.email });
-        if (!existingUser) {
-          await User.create({
-            name: profile?.name,
-            email: profile?.email,
-          });
-        }
-      }
-      return true;
-    },
-
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
-        token.email = user.email;
+        await connectToDatabase();
+        const dbUser = (await User.findOne({
+          email: user.email,
+        })) as IUser | null;
+
+        if (dbUser) {
+          token.id = dbUser._id.toString(); // ✅ Convert ObjectId to string
+          token.email = dbUser.email;
+          token.name = dbUser.name;
+          token.picture = dbUser.image ?? "";
+        }
       }
       return token;
     },
     async session({ session, token }) {
       if (token) {
-        session.user = {
-          email: token.email,
-          name: token.name,
-          image: token.picture,
-        };
+        session.user.id = token.id as string; // ✅ Ensure session.user.id is stored as a string
+        session.user.email = token.email;
+        session.user.name = token.name;
+        session.user.image = token.picture;
       }
       return session;
     },
@@ -83,5 +84,7 @@ const handler = NextAuth({
     signIn: "/sign-in",
   },
   secret: process.env.NEXTAUTH_SECRET,
-});
+};
+
+const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
