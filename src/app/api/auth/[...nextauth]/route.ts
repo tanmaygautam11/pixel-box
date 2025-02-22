@@ -49,34 +49,44 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           name: user.name,
           image: user.image,
-        }; // ✅ Return user object with required properties
+        };
       },
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        await connectToDatabase();
-        const dbUser = (await User.findOne({
-          email: user.email,
-        })) as IUser | null;
+    async jwt({ token, user, account }) {
+      await connectToDatabase();
 
-        if (dbUser) {
-          token.id = dbUser._id.toString(); // ✅ Convert ObjectId to string
-          token.email = dbUser.email;
-          token.name = dbUser.name;
-          token.picture = dbUser.image ?? "";
+      if (user) {
+        let dbUser = await User.findOne({ email: user.email });
+
+        // ✅ If the user doesn't exist, create a new user in MongoDB
+        if (!dbUser) {
+          dbUser = await User.create({
+            email: user.email,
+            name: user.name,
+            image: user.image,
+          });
+        }
+
+        token.id = dbUser._id.toString();
+        token.email = dbUser.email;
+        token.name = dbUser.name;
+        token.picture = dbUser.image ?? "";
+
+        // ✅ Store OAuth access token
+        if (account) {
+          token.accessToken = account.access_token;
         }
       }
+
       return token;
     },
     async session({ session, token }) {
-      if (token) {
-        session.user.id = token.id as string; // ✅ Ensure session.user.id is stored as a string
-        session.user.email = token.email;
-        session.user.name = token.name;
-        session.user.image = token.picture;
-      }
+      session.user.id = token.id as string;
+      session.user.email = token.email;
+      session.user.name = token.name;
+      session.user.image = token.picture;
       return session;
     },
   },

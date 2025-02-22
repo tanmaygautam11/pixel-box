@@ -10,40 +10,39 @@ import { useRouter, useParams } from "next/navigation";
 interface Photo {
   id: string;
   alt_description?: string;
-  urls: { regular: string };
-  user: { name: string };
+  urls: { small: string; medium: string; regular: string; full: string };
+  user: { name: string; profile_image: { small: string } };
   downloads: number;
   created_at: string;
+  location?: { name?: string };
+  tags?: { title: string }[];
+}
+
+interface Collection {
+  _id: string;
+  name: string;
 }
 
 export default function PhotoPage() {
-  const { id } = useParams<{ id: string }>(); // Unwrapping params
+  const { id } = useParams<{ id: string }>();
   const { data: session } = useSession();
   const [photo, setPhoto] = useState<Photo | null>(null);
-  interface Collection {
-    _id: string;
-    name: string;
-  }
-
   const [collections, setCollections] = useState<Collection[]>([]);
   const [showCollectionModal, setShowCollectionModal] = useState(false);
   const [newCollectionName, setNewCollectionName] = useState("");
-  const [selectedCollection, setSelectedCollection] = useState<string | null>(
-    null
-  );
+  const [selectedCollection, setSelectedCollection] = useState<string | null>(null);
+  const [showDownloadOptions, setShowDownloadOptions] = useState(false);
   const router = useRouter();
 
-  // Fetch photo details
   useEffect(() => {
     async function fetchData() {
-      if (!id) return; // Ensure id is available before fetching
+      if (!id) return;
       const data = await fetchPhotoDetails(id);
       setPhoto(data);
     }
     fetchData();
   }, [id]);
 
-  // Fetch user's collections when modal opens
   useEffect(() => {
     if (showCollectionModal && session?.user?.id) {
       fetchUserCollections();
@@ -62,69 +61,104 @@ export default function PhotoPage() {
     setCollections(data);
   };
 
-const handleCreateCollection = async () => {
-  if (!newCollectionName) {
-    alert("Enter a collection name.");
-    return;
-  }
+  const handleCreateCollection = async () => {
+    if (!newCollectionName.trim()) {
+      alert("Enter a collection name.");
+      return;
+    }
 
-  try {
-    const response = await fetch("/api/collections/create", {
-      method: "POST",
+    try {
+      const response = await fetch("/api/collections/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: newCollectionName }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("Collection created!");
+        setNewCollectionName("");
+        fetchUserCollections(); // Refresh collections
+      } else {
+        console.error("Error creating collection:", data);
+        alert(`Failed to create collection: ${data.message}`);
+      }
+    } catch (error) {
+      console.error("Network error:", error);
+      alert("Network error: Could not create collection.");
+    }
+  };
+
+  const handleAddToCollection = async () => {
+    if (!selectedCollection) {
+      alert("Select a collection first.");
+      return;
+    }
+
+    const imageId = photo?.id;
+
+    const response = await fetch("/api/collections/add-image", {
+      method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: newCollectionName }),
+      body: JSON.stringify({
+        collectionId: selectedCollection,
+        imageId: imageId,
+      }),
     });
 
-    const data = await response.json();
-
     if (response.ok) {
-      alert("Collection created!");
-      setNewCollectionName("");
-      fetchUserCollections(); // Refresh collections
+      alert("Photo added successfully!");
+      setShowCollectionModal(false);
+      router.refresh();
     } else {
-      console.error("Error creating collection:", data);
-      alert(`Failed to create collection: ${data.message}`);
+      alert("Failed to add photo.");
     }
-  } catch (error) {
-    console.error("Network error:", error);
-    alert("Network error: Could not create collection.");
-  }
-};
-const handleAddToCollection = async () => {
-  if (!selectedCollection) {
-    alert("Select a collection first.");
-    return;
-  }
+  };
 
-  // Ensure that `photo.id` is the image ID, not the URL
-  const imageId = photo?.id; // The image ID from Unsplash
+  const handleDownload = async (size: keyof Photo["urls"]) => {
+    if (!photo?.urls[size]) return;
 
-  const response = await fetch("/api/collections/add-image", {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      collectionId: selectedCollection,
-      imageId: imageId, // Send imageId instead of imageUrl
-    }),
-  });
-
-  if (response.ok) {
-    alert("Photo added successfully!");
-    setShowCollectionModal(false);
-    router.refresh(); // Refresh page
-  } else {
-    alert("Failed to add photo.");
-  }
-};
+    try {
+      const response = await fetch(photo.urls[size]);
+      const blob = await response.blob();
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `photo-${photo.id}-${size}.jpg`;
+      link.click();
+    } catch (error) {
+      console.error("Error downloading image:", error);
+      alert("Failed to download image.");
+    }
+  };
 
   if (!photo) return <p className="text-center text-gray-500">Loading...</p>;
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
-      <h1 className="text-xl font-bold">
+      {/* User Info */}
+      <div className="flex items-center mb-4 mt-10">
+        <Image
+          src={photo.user.profile_image.small}
+          alt="User profile photo"
+          width={40}
+          height={40}
+          className="rounded-full mr-3"
+        />
+        <p className="font-semibold">{photo.user.name}</p>
+      </div>
+
+      <h1 className="text-3xl font-bold mb-4">
         {photo.alt_description || "Untitled"}
       </h1>
-      <div className="relative w-full h-[500px] my-4">
+
+      {/* Show Image Location */}
+      {photo.location?.name && (
+        <p className="text-gray-600 mb-2">📍 Location: {photo.location.name}</p>
+      )}
+
+      {/* Image Display */}
+      <div className="relative w-full h-[500px] my-6">
         <Image
           src={photo.urls.regular}
           alt={photo.alt_description || "Image"}
@@ -132,26 +166,72 @@ const handleAddToCollection = async () => {
           className="rounded-lg object-cover"
         />
       </div>
-      <p className="text-gray-600">By {photo.user.name}</p>
-      <p className="text-gray-600">Downloads: {photo.downloads}</p>
-      <p className="text-gray-600">
-        Created at: {new Date(photo.created_at).toDateString()}
-      </p>
 
-      {session ? (
-        <button
-          onClick={() => setShowCollectionModal(true)}
-          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-        >
-          Add to Collection
-        </button>
-      ) : (
-        <p className="text-red-500 mt-4">
-          Sign in to add photos to a collection.
-        </p>
+      {/* Tags */}
+      {photo.tags && photo.tags.length > 0 && (
+        <div className="mb-4">
+          <p className="text-gray-700 font-semibold mb-2">Tags:</p>
+          <div className="flex flex-wrap gap-2">
+            {photo.tags.map((tag) => (
+              <span
+                key={tag.title}
+                className="bg-gray-200 px-3 py-1 text-sm rounded-full"
+              >
+                #{tag.title}
+              </span>
+            ))}
+          </div>
+        </div>
       )}
 
-      {/* Collection Modal */}
+      {/* Buttons */}
+      <div className="flex justify-between items-center">
+        {session ? (
+          <button
+            onClick={() => setShowCollectionModal(true)}
+            className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+          >
+            Add to Collection
+          </button>
+        ) : (
+          <p className="text-red-500">Sign in to add photos to a collection.</p>
+        )}
+
+        {/* Download Image Button */}
+        <div className="relative">
+          <button
+            onClick={() => setShowDownloadOptions(!showDownloadOptions)}
+            className="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
+          >
+            Download Image ⬇️
+          </button>
+
+          {showDownloadOptions && (
+            <div className="absolute right-0 mt-2 bg-white shadow-lg rounded-lg overflow-hidden w-40">
+              <button
+                onClick={() => handleDownload("small")}
+                className="w-full text-left px-4 py-2 hover:bg-gray-100"
+              >
+                Small
+              </button>
+              <button
+                onClick={() => handleDownload("regular")}
+                className="w-full text-left px-4 py-2 hover:bg-gray-100"
+              >
+                Regular
+              </button>
+              <button
+                onClick={() => handleDownload("full")}
+                className="w-full text-left px-4 py-2 hover:bg-gray-100"
+              >
+                Full
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Collection Modal (Unchanged) */}
       {showCollectionModal && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-lg w-96">

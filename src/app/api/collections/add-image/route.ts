@@ -12,14 +12,12 @@ export async function PUT(req: NextRequest) {
 
     // Get session and verify user authentication
     const session = await getServerSession(authOptions);
-    console.log("Session:", session);
 
     if (!session || !session.user?.id) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
     const { collectionId, imageId } = await req.json(); // Expecting imageId instead of imageUrl
-    console.log("Received data:", { collectionId, imageId });
 
     // Ensure collectionId and imageId are provided
     if (!collectionId || !imageId) {

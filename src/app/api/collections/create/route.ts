@@ -7,11 +7,9 @@ import Collection from "@/models/collection";
 
 export async function POST(req: NextRequest) {
   try {
-    console.log("Connecting to database...");
     await connectToDatabase();
 
     const session = await getServerSession(authOptions);
-    console.log("Session:", session);
 
     if (!session || !session.user?.id) {
       console.log("Unauthorized - Missing user ID");
@@ -19,7 +17,6 @@ export async function POST(req: NextRequest) {
     }
 
     const { name } = await req.json();
-    console.log("Received collection name:", name);
 
     if (!name) {
       return NextResponse.json(
