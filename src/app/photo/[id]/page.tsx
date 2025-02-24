@@ -5,13 +5,22 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useRouter, useParams } from "next/navigation";
-import { toast } from "sonner"; // Import Sonner's toast function
+import { toast } from "sonner";
 import DefaultProfile from "@/../public/icons/default-profile.png";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faAngleDown, faPlus, faLocationDot, faClosedCaptioning } from "@fortawesome/free-solid-svg-icons";
-import { faCircleDown, faCircleCheck } from "@fortawesome/free-regular-svg-icons";
+import {
+  faAngleDown,
+  faPlus,
+  faLocationDot,
+  faClosedCaptioning,
+  faXmark,
+} from "@fortawesome/free-solid-svg-icons";
+import {
+  faCircleDown,
+  faCircleCheck,
+} from "@fortawesome/free-regular-svg-icons";
 
 interface Photo {
   id: string;
@@ -43,7 +52,7 @@ export default function PhotoPage() {
   const [showDownloadOptions, setShowDownloadOptions] = useState(false);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
-  const [isPortrait, setIsPortrait] = useState(false); // Track image orientation
+  const [isPortrait, setIsPortrait] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -52,18 +61,16 @@ export default function PhotoPage() {
       const data = await fetchPhotoDetails(id);
       setPhoto(data);
 
-      // Check if the image is portrait or landscape
       if (data?.urls?.regular) {
         const img = new window.Image();
         img.src = data.urls.regular;
         img.onload = () => {
-          setIsPortrait(img.height > img.width); // Portrait if height > width
+          setIsPortrait(img.height > img.width);
         };
       }
     }
     fetchData();
   }, [id]);
-   
 
   const capitalizeFirstLetter = (text?: string) => {
     if (!text) return "";
@@ -90,7 +97,7 @@ export default function PhotoPage() {
 
   const handleCreateCollection = async () => {
     if (!newCollectionName.trim()) {
-      toast.error("Enter a collection name."); // Replacing alert with toast.error
+      toast.error("Enter a collection name.");
       return;
     }
 
@@ -104,42 +111,61 @@ export default function PhotoPage() {
       const data = await response.json();
 
       if (response.ok) {
-        toast.success("Collection created!"); // Replacing alert with toast.success
+        toast.success("Collection created!");
         setNewCollectionName("");
-        fetchUserCollections(); // Refresh collections
+        fetchUserCollections();
       } else {
         console.error("Error creating collection:", data);
-        toast.error(`Failed to create collection: ${data.message}`); // Replacing alert with toast.error
+        toast.error(`Failed to create collection: ${data.message}`);
       }
     } catch (error) {
       console.error("Network error:", error);
-      toast.error("Network error: Could not create collection."); // Replacing alert with toast.error
+      toast.error("Network error: Could not create collection.");
     }
   };
-
   const handleAddToCollection = async () => {
     if (!selectedCollection) {
-      toast.error("Select a collection first."); // Replacing alert with toast.error
+      toast.error("Select a collection first.");
       return;
     }
 
     const imageId = photo?.id;
 
-    const response = await fetch("/api/collections/add-image", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        collectionId: selectedCollection,
-        imageId: imageId,
-      }),
-    });
+    try {
+      const checkResponse = await fetch(
+        `/api/collections/${selectedCollection}`
+      );
+      if (checkResponse.ok) {
+        const collectionData = await checkResponse.json();
+        const imageExists = collectionData.images.some(
+          (img: { id: string }) => img.id === imageId
+        );
 
-    if (response.ok) {
-      toast.success("Photo added successfully!"); // Replacing alert with toast.success
-      setShowCollectionModal(false);
-      router.refresh();
-    } else {
-      toast.error("Failed to add photo."); // Replacing alert with toast.error
+        if (imageExists) {
+          toast.error("Image already exists in the collection.");
+        }
+      }
+
+      const response = await fetch("/api/collections/add-image", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          collectionId: selectedCollection,
+          imageId: imageId,
+        }),
+      });
+
+      if (response.ok) {
+        toast.success("Photo added successfully!");
+        setShowCollectionModal(false);
+        router.refresh();
+      } else {
+        const errorData = await response.json();
+        toast.error(errorData.message || "Failed to add photo.");
+      }
+    } catch (error) {
+      console.error("Error adding image:", error);
+      toast.error("An error occurred while adding the photo.");
     }
   };
 
@@ -171,10 +197,10 @@ export default function PhotoPage() {
       {isFullScreen && (
         <div className="fixed inset-0 bg-black bg-opacity-90 flex justify-center items-center z-50">
           <button
-            className="z-10 absolute top-4 right-4 bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-600"
+            className="z-10 absolute top-4 right-4 text-white px-4 py-2 rounded-[6px] hover:bg-gray-100"
             onClick={() => setIsFullScreen(false)}
           >
-            ✖ Close
+            <FontAwesomeIcon icon={faXmark} size="xl" className="text-white" />
           </button>
           <div
             className={`relative w-full h-full flex justify-center items-center transition-transform duration-300 ${
@@ -240,19 +266,13 @@ export default function PhotoPage() {
 
             {/* Buttons */}
             <div className="flex justify-start items-center gap-4">
-              {session ? (
-                <Button
-                  onClick={() => setShowCollectionModal(true)}
-                  className="border border-zinc-400 px-6 py-2 bg-secondary-100 text-black-100 rounded-[6px] hover:bg-black-100 hover:text-secondary transition"
-                >
-                  <FontAwesomeIcon icon={faPlus} size="lg" />
-                  Add to Collection
-                </Button>
-              ) : (
-                <p className="text-red-500">
-                  Sign in to add photos to a collection.
-                </p>
-              )}
+              <Button
+                onClick={() => setShowCollectionModal(true)}
+                className="border border-zinc-400 px-6 py-2 bg-secondary-100 text-black-100 rounded-[6px] hover:bg-black-100 hover:text-secondary transition"
+              >
+                <FontAwesomeIcon icon={faPlus} size="lg" />
+                Add to Collection
+              </Button>
 
               {/* Download Image Button */}
               <div className="relative">
@@ -342,54 +362,52 @@ export default function PhotoPage() {
 
         {/* Collection Modal (Unchanged) */}
         {showCollectionModal && (
-          <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-20">
-            <div className="bg-white p-6 rounded-[6px] w-2/5 h-4/5">
-              <h2 className="text-lg font-bold mb-4">
-                Select or Create Collection
-              </h2>
-
+          <div className="fixed inset-0 bg-gray-100 bg-opacity-50 flex justify-center items-center z-20">
+            <div className="bg-white p-8 rounded-[6px] w-2/5 h-max">
+              <div className="flex justify-between">
+                <h2 className="text-lg font-bold mb-4">Add to Collection</h2>
+                <FontAwesomeIcon
+                  icon={faXmark}
+                  size="xl"
+                  className="text-gray-100 hover:text-black-100"
+                  onClick={() => setShowCollectionModal(false)}
+                />
+              </div>
+              {/* Create New Collection */}
+              <div className="flex gap-3 mb-4">
+                <input
+                  type="text"
+                  value={newCollectionName}
+                  onChange={(e) => setNewCollectionName(e.target.value)}
+                  placeholder="Create new collection"
+                  className="w-full rounded-[6px] text-gray-200 p-3 border border-zinc-400"
+                />
+                <button
+                  onClick={handleCreateCollection}
+                  className="px-4 rounded-[6px] bg-black-100 text-secondary hover:bg-gray-200 transition"
+                >
+                  <FontAwesomeIcon icon={faPlus} size="lg" />
+                </button>
+              </div>
               {/* Select Existing Collection */}
               <select
-                className="w-full p-2 border mb-4"
+                className="w-full rounded-[6px] p-3 mb-4 text-gray-200 border border-zinc-400 focus:border-gray-200"
                 onChange={(e) => setSelectedCollection(e.target.value)}
               >
-                <option value="">Select a collection</option>
+                <option value="">Select a Collection</option>
                 {collections.map((collection) => (
                   <option key={collection._id} value={collection._id}>
-                    {collection.name}
+                    {capitalizeFirstLetter(collection.name)}
                   </option>
                 ))}
               </select>
 
-              {/* Create New Collection */}
-              <input
-                type="text"
-                value={newCollectionName}
-                onChange={(e) => setNewCollectionName(e.target.value)}
-                placeholder="New collection name"
-                className="w-full p-2 border mb-4"
-              />
-              <button
-                onClick={handleCreateCollection}
-                className="w-full px-4 py-2 bg-green-500 text-white rounded"
-              >
-                Create Collection
-              </button>
-
               {/* Add to Collection */}
               <button
                 onClick={handleAddToCollection}
-                className="w-full px-4 py-2 bg-blue-500 text-white rounded mt-4"
+                className="w-full p-3 rounded-[6px] bg-black-100 text-secondary hover:bg-gray-200 transition"
               >
                 Add Photo to Collection
-              </button>
-
-              {/* Close Modal */}
-              <button
-                onClick={() => setShowCollectionModal(false)}
-                className="mt-4 w-full px-4 py-2 bg-gray-500 text-white rounded"
-              >
-                Cancel
               </button>
             </div>
           </div>
