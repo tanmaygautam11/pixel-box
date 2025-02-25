@@ -3,11 +3,14 @@ import React, { useEffect, useState } from "react";
 import { fetchCollections } from "@/lib/unsplash";
 import CollectionCard from "@/components/CollectionCard";
 import { UnsplashCollection } from "@/types/unsplash";
+import { useRouter } from "next/navigation";
 
 const CollectionGallery = () => {
   const [collections, setCollections] = useState<UnsplashCollection[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [page, setPage] = useState<number>(1);
+  const router = useRouter();
+  
 
   useEffect(() => {
     const loadCollections = async () => {
@@ -58,7 +61,7 @@ const CollectionGallery = () => {
               title={coll.title}
               coverPhotoUrl={coll.cover_photo.urls.small}
               totalPhotos={coll.total_photos}
-              href={`/collection/${coll.id}`}
+              onClick={() => router.push(`/collection/${coll.id}`)}
             />
           ))}
         </div>

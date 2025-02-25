@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { fetchPhotoDetails } from "@/lib/unsplash";
 import ImageGallery, { UnsplashImage } from "@/components/ImageGallery";
+import { toast } from "sonner";
 
 export default function CollectionPhotosPage() {
   const { id } = useParams();
@@ -80,6 +81,32 @@ export default function CollectionPhotosPage() {
     fetchCollectionDetails();
   }, [id]);
 
+  const handleDeleteImage = async (imageId: string) => {
+    try {
+      const response = await fetch("/api/collections/remove-image", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ collectionId: id, imageId }),
+      });
+
+      if (response.ok) {
+        // Remove image from the local state
+        setPhotos((prevPhotos) =>
+          prevPhotos.filter((photo) => photo.id !== imageId)
+        );
+        toast.success("Image removed successfully!");
+      } else {
+        console.error("Failed to delete image");
+        toast.error("Failed to remove the image.");
+      }
+    } catch (error) {
+      console.error("Error deleting image:", error);
+      toast.error("Error deleting the image.");
+    }
+  };
+
   if (isLoading) {
     return <div className="text-center text-gray-500">Loading...</div>;
   }
@@ -93,7 +120,11 @@ export default function CollectionPhotosPage() {
         <p>No photos found in this collection</p>
       ) : (
         <div className="py-8">
-          <ImageGallery images={photos} />
+          <ImageGallery
+            images={photos}
+            showDeleteButton={true}
+            onDeleteImage={handleDeleteImage}
+          />
         </div>
       )}
     </div>

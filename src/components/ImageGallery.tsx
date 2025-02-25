@@ -3,6 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import DefaultProfile from "@/../public/icons/default-profile.png";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";  
 
 export interface UnsplashImage {
   id: string;
@@ -25,12 +27,16 @@ interface ImageGalleryProps {
   images: UnsplashImage[];
   onLoadMore?: () => void;
   isLoadingMore?: boolean;
+  showDeleteButton?: boolean;
+  onDeleteImage?: (imageId: string) => void;
 }
 
 const ImageGallery = ({
   images,
   onLoadMore,
   isLoadingMore = false,
+  showDeleteButton = false,
+  onDeleteImage,
 }: ImageGalleryProps) => {
   if (!images || images.length === 0) {
     return <p className="text-center text-gray-500">No images available.</p>;
@@ -88,6 +94,16 @@ const ImageGallery = ({
                   </div>
                 </div>
               </Link>
+
+              {showDeleteButton &&
+                onDeleteImage && (
+                  <button
+                    onClick={() => onDeleteImage(img.id)}
+                    className="absolute top-2 right-2 text-secondary-100 rounded-full p-2 hover:text-white"
+                  >
+                    <FontAwesomeIcon icon={faTrash} size="lg" />
+                  </button>
+                )}
             </div>
           );
         })}

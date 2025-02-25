@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { fetchPhotoDetails } from "@/lib/unsplash";
 import CollectionCard from "@/components/CollectionCard";
+import { toast } from "sonner";
 
 export default function MyCollections() {
   const { data: session } = useSession();
@@ -67,6 +68,28 @@ export default function MyCollections() {
     fetchCollections();
   }, [session]);
 
+  // Handle collection deletion
+  const handleDeleteCollection = async (id: string) => {
+    try {
+      const response = await fetch(`/api/collections/delete/${id}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        // Remove the collection from the state
+        setCollections((prevCollections) =>
+          prevCollections.filter((collection) => collection._id !== id)
+        );
+        toast.success("Collection deleted successfully!");
+      } else {
+        toast.error("Failed to delete collection.");
+      }
+    } catch (error) {
+      console.error("Error deleting collection:", error);
+      toast.error("Error deleting collection.");
+    }
+  };
+
   if (isLoading) {
     return <div className="text-center text-gray-500">Loading...</div>;
   }
@@ -91,6 +114,8 @@ export default function MyCollections() {
                 coverPhotoUrl={coverImageUrl || ""}
                 totalPhotos={collection.images.length}
                 onClick={() => router.push(`/my-collection/${collection._id}`)}
+                showDeleteButton={true}
+                onDeleteCollection={handleDeleteCollection}
               />
             );
           })}
