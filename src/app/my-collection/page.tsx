@@ -6,6 +6,10 @@ import { useRouter } from "next/navigation";
 import { fetchPhotoDetails } from "@/lib/unsplash";
 import CollectionCard from "@/components/CollectionCard";
 import { toast } from "sonner";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
+const placeholderImage =
+  "https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM=";
 
 export default function MyCollections() {
   const { data: session } = useSession();
@@ -19,6 +23,8 @@ export default function MyCollections() {
   const [collections, setCollections] = useState<Collection[]>([]);
   const [coverPhotos, setCoverPhotos] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [showCollectionModal, setShowCollectionModal] = useState(false);
+  const [newCollectionName, setNewCollectionName] = useState("");
 
   useEffect(() => {
     if (!session?.user?.id) return;
@@ -40,7 +46,7 @@ export default function MyCollections() {
                 const photoDetails = await fetchPhotoDetails(firstImageId);
                 return {
                   collectionId: collection._id,
-                  coverPhotoUrl: photoDetails?.urls?.small,
+                  coverPhotoUrl: photoDetails?.urls?.regular,
                 };
               }
               return null;
@@ -67,7 +73,34 @@ export default function MyCollections() {
 
     fetchCollections();
   }, [session]);
+  const handleCreateCollection = async () => {
+    if (!newCollectionName.trim()) {
+      toast.error("Enter a collection name.");
+      return;
+    }
 
+    try {
+      const response = await fetch("/api/collections/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: newCollectionName }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success("Collection created!");
+        setNewCollectionName("");
+        setShowCollectionModal(false);
+      } else {
+        console.error("Error creating collection:", data);
+        toast.error(`Failed to create collection: ${data.message}`);
+      }
+    } catch (error) {
+      console.error("Network error:", error);
+      toast.error("Network error: Could not create collection.");
+    }
+  };
   // Handle collection deletion
   const handleDeleteCollection = async (id: string) => {
     try {
@@ -111,7 +144,7 @@ export default function MyCollections() {
                 key={collection._id}
                 id={collection._id}
                 title={collection.name}
-                coverPhotoUrl={coverImageUrl || ""}
+                coverPhotoUrl={coverImageUrl || placeholderImage  }
                 totalPhotos={collection.images.length}
                 onClick={() => router.push(`/my-collection/${collection._id}`)}
                 showDeleteButton={true}
@@ -119,6 +152,43 @@ export default function MyCollections() {
               />
             );
           })}
+          <div
+            onClick={() => setShowCollectionModal(true)}
+            className="min-h-[300px] cursor-pointer bg-secondary-100 text-gray-100 rounded-xl flex justify-center items-center flex-col gap-2"
+          >
+            <FontAwesomeIcon icon={faPlus} size="2xl" />
+            <h3 className="text-2xl font-medium">Add new collection</h3>
+          </div>
+        </div>
+      )}
+      {showCollectionModal && (
+        <div className="fixed inset-0 bg-gray-100 bg-opacity-50 flex justify-center items-center z-20">
+          <div className="bg-white p-8 rounded-[6px] w-2/5 h-max">
+            <div className="flex justify-between">
+              <h2 className="text-lg font-bold mb-4">Add to Collection</h2>
+              <FontAwesomeIcon
+                icon={faXmark}
+                size="xl"
+                className="text-gray-100 hover:text-black-100"
+                onClick={() => setShowCollectionModal(false)}
+              />
+            </div>
+            <div className="flex gap-3 mb-4">
+              <input
+                type="text"
+                value={newCollectionName}
+                onChange={(e) => setNewCollectionName(e.target.value)}
+                placeholder="Create new collection"
+                className="w-full rounded-[6px] text-gray-200 p-3 border border-zinc-400"
+              />
+              <button
+                onClick={handleCreateCollection}
+                className="px-4 rounded-[6px] bg-black-100 text-secondary hover:bg-gray-200 transition"
+              >
+                <FontAwesomeIcon icon={faPlus} size="lg" />
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

@@ -32,18 +32,21 @@ const CollectionCard: React.FC<CollectionCardProps> = ({
   };
 
   return (
-    <div
-      className="cursor-pointer bg-white hover:scale-105 transition duration-300 relative"
-      onClick={onClick}
-    >
+    <div className="cursor-pointer bg-white relative group" onClick={onClick}>
       <a>
-        <Image
-          src={coverPhotoUrl}
-          alt={title}
-          width={500}
-          height={300}
-          className="object-cover w-full h-72 rounded-[6px]"
-        />
+        {/* Image with hover effect */}
+        <div className="relative w-full h-72 group">
+          <Image
+            src={coverPhotoUrl}
+            alt={title}
+            width={700}
+            height={500}
+            className="object-cover w-full h-full rounded-[6px]"
+          />
+
+          {/* Overlay */}
+          <div className="rounded-[6px] absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        </div>
       </a>
       <div className="mt-3">
         <h2 className="text-lg font-semibold text-gray-900">
@@ -56,9 +59,9 @@ const CollectionCard: React.FC<CollectionCardProps> = ({
       {showDeleteButton && (
         <button
           onClick={handleDelete}
-          className="absolute top-2 right-2 text-secondary-100 rounded-full p-2 hover:text-white"
+          className="absolute top-2 right-2 text-secondary-100 p-2 opacity-0 group-hover:opacity-100 transition-opacity hover:text-white"
         >
-          <FontAwesomeIcon icon={faTrash} size="lg" />
+          <FontAwesomeIcon icon={faTrash} size="sm" />
         </button>
       )}
     </div>

@@ -42,10 +42,8 @@ export async function POST(req: NextRequest) {
       images: [],
     });
 
-    console.log("Saving new collection...");
     await newCollection.save();
 
-    console.log("Collection created successfully:", newCollection);
     return NextResponse.json(newCollection, { status: 201 });
   } catch (error) {
     console.error("Error creating collection:", error);
