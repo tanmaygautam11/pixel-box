@@ -110,7 +110,7 @@ export const fetchPhotoDetails = async (photoId: string) => {
       throw new Error(`Failed to fetch photo details: ${response.statusText}`);
     }
 
-    return await response.json(); // This will contain the full details of the photo
+    return await response.json();
   } catch (error) {
     console.error("Error fetching photo details:", error);
     return null;
@@ -133,7 +133,6 @@ export const fetchCollections = async (
       },
     });
 
-    // Handling rate limit exceeded error
     if (response.status === 403) {
       throw new Error("Rate limit exceeded. Please try again later.");
     }
@@ -147,10 +146,8 @@ export const fetchCollections = async (
 
     const data = await response.json();
 
-    // Create a Set of existing collection IDs to avoid duplicates
     const existingIds = new Set(existingCollections.map((coll) => coll.id));
 
-    // Filter out any collections that have already been added
     const uniqueCollections = data.filter(
       (coll: UnsplashCollection) => !existingIds.has(coll.id)
     );
@@ -158,7 +155,7 @@ export const fetchCollections = async (
     return uniqueCollections;
   } catch (error) {
     console.error("Error fetching collections from Unsplash:", error);
-    return null; // Return null in case of error
+    return null;
   }
 };
 export const fetchCollectionPhotos = async (

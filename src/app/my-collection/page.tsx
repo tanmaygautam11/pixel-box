@@ -2,13 +2,13 @@
 
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation"; // Import useRouter from next/navigation
-import { fetchPhotoDetails } from "@/lib/unsplash"; // Import the function to fetch photo details
-import CollectionCard from "@/components/CollectionCard"; // Import CollectionCard
+import { useRouter } from "next/navigation";
+import { fetchPhotoDetails } from "@/lib/unsplash";
+import CollectionCard from "@/components/CollectionCard";
 
 export default function MyCollections() {
   const { data: session } = useSession();
-  const router = useRouter(); // Initialize useRouter hook
+  const router = useRouter();
   interface Collection {
     _id: string;
     name: string;
@@ -16,10 +16,9 @@ export default function MyCollections() {
   }
 
   const [collections, setCollections] = useState<Collection[]>([]);
-  const [coverPhotos, setCoverPhotos] = useState<Record<string, string>>({}); // Store cover photos by collection ID
+  const [coverPhotos, setCoverPhotos] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
 
-  // Fetch collections when the page loads
   useEffect(() => {
     if (!session?.user?.id) return;
 
@@ -33,12 +32,11 @@ export default function MyCollections() {
           const data = await response.json();
           setCollections(data);
 
-          // Fetch cover photos for each collection (first image in the collection)
           const coverPhotoPromises = data.map(
             async (collection: Collection) => {
               const firstImageId = collection.images[0];
               if (firstImageId) {
-                const photoDetails = await fetchPhotoDetails(firstImageId); // Get metadata for the first image
+                const photoDetails = await fetchPhotoDetails(firstImageId);
                 return {
                   collectionId: collection._id,
                   coverPhotoUrl: photoDetails?.urls?.small,
@@ -92,7 +90,7 @@ export default function MyCollections() {
                 title={collection.name}
                 coverPhotoUrl={coverImageUrl || ""}
                 totalPhotos={collection.images.length}
-                onClick={() => router.push(`/my-collection/${collection._id}`)} // Use router.push for navigation
+                onClick={() => router.push(`/my-collection/${collection._id}`)}
               />
             );
           })}

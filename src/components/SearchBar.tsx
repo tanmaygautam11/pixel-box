@@ -8,19 +8,19 @@ import Image from "next/image";
 
 interface SearchBarProps {
   onSearch: (query: string) => void;
-  initialQuery: string; // New prop to pass the query value
+  initialQuery: string;
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({ onSearch, initialQuery }) => {
   const [query, setQuery] = useState(initialQuery);
 
   useEffect(() => {
-    setQuery(initialQuery); // Update query if initialQuery prop changes
+    setQuery(initialQuery);
   }, [initialQuery]);
 
   const handleSearch = () => {
     if (query.trim()) {
-      onSearch(query); // Pass the query to the parent component
+      onSearch(query); 
     }
   };
 

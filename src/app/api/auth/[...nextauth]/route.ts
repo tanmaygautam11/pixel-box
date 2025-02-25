@@ -60,7 +60,6 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         let dbUser = await User.findOne({ email: user.email });
 
-        // ✅ If the user doesn't exist, create a new user in MongoDB
         if (!dbUser) {
           dbUser = await User.create({
             email: user.email,
@@ -74,7 +73,6 @@ export const authOptions: NextAuthOptions = {
         token.name = dbUser.name;
         token.picture = dbUser.image ?? "";
 
-        // ✅ Store OAuth access token
         if (account) {
           token.accessToken = account.access_token;
         }

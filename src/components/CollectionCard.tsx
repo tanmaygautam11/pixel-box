@@ -4,10 +4,10 @@ import Image from "next/image";
 export interface CollectionCardProps {
   id: string;
   title: string;
-  coverPhotoUrl: string; // This should now be a full URL or Unsplash URL object
+  coverPhotoUrl: string;
   totalPhotos: number;
-  href?: string; // Add a href prop to link to the collection page
-  onClick?: () => void; // Triggered when the card is clicked
+  href?: string;
+  onClick?: () => void;
 }
 
 const CollectionCard: React.FC<CollectionCardProps> = ({
@@ -15,16 +15,18 @@ const CollectionCard: React.FC<CollectionCardProps> = ({
   coverPhotoUrl,
   totalPhotos,
   onClick,
-  href
+  href,
 }) => {
+  const formattedTitle = title.charAt(0).toUpperCase() + title.slice(1);
+
   return (
     <div
-      className="cursor-pointer bg-white"
-      onClick={onClick} // Trigger the onClick event to select the collection
+      className="cursor-pointer bg-white hover:scale-105 transition duration-300"
+      onClick={onClick}
     >
       <a href={href}>
         <Image
-          src={coverPhotoUrl} // Use the full URL directly here
+          src={coverPhotoUrl}
           alt={title}
           width={500}
           height={300}
@@ -32,7 +34,9 @@ const CollectionCard: React.FC<CollectionCardProps> = ({
         />
       </a>
       <div className="mt-3">
-        <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
+        <h2 className="text-lg font-semibold text-gray-900">
+          {formattedTitle}
+        </h2>
         <h4 className="text-gray-500 text-sm">{totalPhotos} photos</h4>
       </div>
     </div>

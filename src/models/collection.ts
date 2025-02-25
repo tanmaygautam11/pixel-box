@@ -12,23 +12,22 @@ const CollectionSchema: Schema<ICollection> = new Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: true, // Must reference a user
+    required: true,
   },
   name: {
     type: String,
-    required: true, // The name of the collection
+    required: true
   },
   images: {
-    type: [String], // Store image IDs (not URLs)
-    default: [], // Default to an empty array if no images are provided
+    type: [String], // Store image IDs
+    default: [],
   },
   createdAt: {
     type: Date,
-    default: Date.now, // Timestamp for when the collection was created
+    default: Date.now,
   },
 });
 
-// Ensure that the Collection model is available (to prevent overriding)
 const Collection =
   mongoose.models.Collection ||
   mongoose.model<ICollection>("Collection", CollectionSchema);

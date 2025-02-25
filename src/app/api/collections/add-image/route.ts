@@ -10,14 +10,13 @@ export async function PUT(req: NextRequest) {
     console.log("Connecting to database...");
     await connectToDatabase();
 
-    // Get session and verify user authentication
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user?.id) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const { collectionId, imageId } = await req.json(); // Expecting imageId instead of imageUrl
+    const { collectionId, imageId } = await req.json();
 
     // Ensure collectionId and imageId are provided
     if (!collectionId || !imageId) {

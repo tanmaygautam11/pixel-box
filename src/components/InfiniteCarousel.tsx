@@ -67,7 +67,7 @@ const InfiniteCarousel = () => {
         {[...images, ...images].map((src, index) => (
           <motion.div
             key={index}
-            className="w-[250px] h-[200px] shadow-black-100 shadow-md flex-shrink-0 transform transition-transform duration-300 hover:scale-105 sm:w-[300px] sm:h-[250px] md:w-[400px] md:h-[300px]"
+            className="w-[250px] h-[200px] shadow-md flex-shrink-0 transform transition-transform duration-300 hover:scale-105 sm:w-[300px] sm:h-[250px] md:w-[400px] md:h-[300px]"
           >
             <Image
               src={src}

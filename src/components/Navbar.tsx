@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import FullLogo from "../../public/icons/FullLogo.svg";
-import Logo from "../../public/icons/Logo.svg"; // The smaller logo used when not logged in
+import Logo from "../../public/icons/Logo.svg";
 
 const Navbar: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
@@ -32,15 +32,13 @@ const Navbar: React.FC = () => {
     router.push("/");
   };
 
-  // Fallback for the user's avatar (first letter of their name)
   const avatarFallback = session?.user?.name?.charAt(0).toUpperCase();
 
-  // A helper function to return active/inactive link classes.
   const navLinkClasses = (href: string) =>
     `rounded-md px-3 py-2 text-sm font-medium ${
       pathname === href
-        ? "border-b-2 border-zinc-300 text-black-100" // Active: underline in secondary color & primary text
-        : "text-gray-100 hover:text-zinc-600 hover:border-b-2 border-secondary" // Inactive: light text, hover to primary
+        ? "border-b-2 border-zinc-300 text-black-100" // Active
+        : "text-gray-100 hover:text-zinc-600 hover:border-b-2 border-secondary" // Inactive
     }`;
 
   return (
@@ -94,7 +92,6 @@ const Navbar: React.FC = () => {
             </div>
           )}
 
-          {/* Logo and navigation links */}
           <div
             className={`flex flex-1 items-center ${
               session ? "justify-evenly sm:justify-start" : "justify-start"
@@ -133,14 +130,14 @@ const Navbar: React.FC = () => {
                   >
                     Collections
                   </Link>
-                  <Link
-                    href="/trending"
-                    className={navLinkClasses("/trending")}
-                  >
-                    Trending
-                  </Link>
                   <Link href="/latest" className={navLinkClasses("/latest")}>
                     Latest
+                  </Link>
+                  <Link
+                    href="/my-collection"
+                    className={navLinkClasses("/my-collection")}
+                  >
+                    My Collection
                   </Link>
                 </div>
               </div>
@@ -230,17 +227,6 @@ const Navbar: React.FC = () => {
               Collections
             </Link>
             <Link
-              href="/trending"
-              className={`block rounded-md px-3 py-2 text-base font-medium ${
-                pathname === "/trending"
-                  ? "border-b-2 border-zinc-300 text-black-100"
-                  : "text-gray-100 hover:text-zinc-600 hover:border-b-2 border-secondary"
-              }`}
-              aria-current={pathname === "/trending" ? "page" : undefined}
-            >
-              Trending
-            </Link>
-            <Link
               href="/latest"
               className={`block rounded-md px-3 py-2 text-base font-medium ${
                 pathname === "/latest"
@@ -250,6 +236,17 @@ const Navbar: React.FC = () => {
               aria-current={pathname === "/latest" ? "page" : undefined}
             >
               Latest
+            </Link>
+            <Link
+              href="/my-collection"
+              className={`block rounded-md px-3 py-2 text-base font-medium ${
+                pathname === "/my-collection"
+                  ? "border-b-2 border-zinc-300 text-black-100"
+                  : "text-gray-100 hover:text-zinc-600 hover:border-b-2 border-secondary"
+              }`}
+              aria-current={pathname === "/my-collection" ? "page" : undefined}
+            >
+              My Collection
             </Link>
           </div>
         </div>

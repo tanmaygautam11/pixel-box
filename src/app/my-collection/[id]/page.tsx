@@ -1,28 +1,52 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {  useParams } from "next/navigation"; // Import useRouter and useParams from next/navigation
-import { fetchPhotoDetails } from "@/lib/unsplash"; // Import the function to fetch photo details
-import ImageGallery, { UnsplashImage } from "@/components/ImageGallery"; // Import ImageGallery for displaying collection photos
+import { useParams } from "next/navigation";
+import { fetchPhotoDetails } from "@/lib/unsplash";
+import ImageGallery, { UnsplashImage } from "@/components/ImageGallery";
 
 export default function CollectionPhotosPage() {
-  const { id } = useParams(); // Get the collection ID from the URL
+  const { id } = useParams();
 
   const [photos, setPhotos] = useState<UnsplashImage[]>([]);
+  const [collectionTitle, setCollectionTitle] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    if (!id) return; // Wait for the collection ID to be available
+  const capitalizeFirstLetter = (text: string) => {
+    return text.charAt(0).toUpperCase() + text.slice(1);
+  };
 
-    const fetchPhotos = async () => {
+  useEffect(() => {
+    if (!id) return;
+
+    const fetchCollectionDetails = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch(`/api/collections/${id}/photos`);
-        if (response.ok) {
-          const data = await response.json();
+        const collectionResponse = await fetch(`/api/collections/user/${id}`);
+        if (collectionResponse.ok) {
+          const collectionData = await collectionResponse.json();
+          console.log("Fetched collection data:", collectionData);
+
+          if (collectionData && collectionData.name) {
+            const capitalizedTitle = capitalizeFirstLetter(collectionData.name);
+            setCollectionTitle(capitalizedTitle);
+          } else {
+            console.error(
+              "Collection data does not contain a title:",
+              collectionData
+            );
+          }
+        } else {
+          console.error("Failed to fetch collection details");
+        }
+
+        // Fetch photos for the collection
+        const photosResponse = await fetch(`/api/collections/${id}/photos`);
+        if (photosResponse.ok) {
+          const data = await photosResponse.json();
           const fetchedPhotos: UnsplashImage[] = [];
           for (const imageId of data) {
-            const photoDetails = await fetchPhotoDetails(imageId); // Fetch photo details
+            const photoDetails = await fetchPhotoDetails(imageId);
             if (photoDetails) {
               fetchedPhotos.push({
                 id: photoDetails.id,
@@ -47,14 +71,14 @@ export default function CollectionPhotosPage() {
           console.error("Failed to fetch photos for the collection");
         }
       } catch (error) {
-        console.error("Error fetching photos:", error);
+        console.error("Error fetching collection or photos:", error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchPhotos();
-  }, [id]); // Trigger fetch when the collection ID changes
+    fetchCollectionDetails();
+  }, [id]);
 
   if (isLoading) {
     return <div className="text-center text-gray-500">Loading...</div>;
@@ -62,8 +86,8 @@ export default function CollectionPhotosPage() {
 
   return (
     <div className="w-full h-full absolute top-24 px-16">
-      <h1 className="text-center text-[40px] gradient-text mb-4">
-        Collection Photos
+      <h1 className="text-center text-[42px] gradient-text">
+        {collectionTitle ? `${collectionTitle}` : "Collection Photos"}
       </h1>
       {photos.length === 0 ? (
         <p>No photos found in this collection</p>

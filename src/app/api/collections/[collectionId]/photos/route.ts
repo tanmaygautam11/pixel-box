@@ -7,7 +7,7 @@ export async function GET(
   context: { params: { collectionId: string } }
 ) {
   try {
-    const { collectionId } = await context.params; // Await params
+    const { collectionId } = context.params;
 
     if (!collectionId) {
       return NextResponse.json(

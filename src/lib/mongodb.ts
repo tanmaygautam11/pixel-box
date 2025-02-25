@@ -8,7 +8,7 @@ if (!MONGODB_URI) {
 
 async function connectToDatabase() {
   if (mongoose.connection.readyState === 1) {
-    return mongoose; // If already connected, no need to reconnect
+    return mongoose;
   }
 
   const opts = {

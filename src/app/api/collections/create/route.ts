@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // ✅ Check if `session.user.id` is a valid ObjectId before using it
+    // Check if `session.user.id` is a valid ObjectId before using it
     if (!mongoose.Types.ObjectId.isValid(session.user.id)) {
       console.error("Invalid ObjectId:", session.user.id);
       return NextResponse.json(
@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const userId = new mongoose.Types.ObjectId(session.user.id); // ✅ Convert session.user.id to ObjectId
+    const userId = new mongoose.Types.ObjectId(session.user.id); // Convert session.user.id to ObjectId
 
     const newCollection = new Collection({
       userId,

@@ -60,12 +60,10 @@ const SearchPage = () => {
       );
 
       if (moreImages) {
-        // Filter out images that have already been fetched based on their IDs
         const newImages = moreImages.filter(
           (img) => !fetchedImageIds.has(img.id)
         );
 
-        // If new unique images exist, update state
         if (newImages.length > 0) {
           setImages((prev) => [...prev, ...newImages]);
           setFetchedImageIds(

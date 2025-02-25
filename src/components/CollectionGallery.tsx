@@ -17,7 +17,6 @@ const CollectionGallery = () => {
         setCollections((prevCollections) => {
           const updatedCollections = [...prevCollections, ...newCollections];
 
-          // Ensure collections are unique by ID
           const uniqueCollections = Array.from(
             new Map(updatedCollections.map((coll) => [coll.id, coll])).values()
           );

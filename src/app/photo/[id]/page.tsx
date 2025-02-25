@@ -31,7 +31,6 @@ interface Photo {
   created_at: string;
   location?: { name?: string };
   tags?: { title: string }[];
-  // photos property removed
 }
 
 interface Collection {
@@ -181,11 +180,10 @@ export default function PhotoPage() {
       link.click();
     } catch (error) {
       console.error("Error downloading image:", error);
-      toast.error("Failed to download image."); // Replacing alert with toast.error
+      toast.error("Failed to download image.");
     }
   };
   const handleTagClick = (tagName: string) => {
-    // Navigate to the /search/[tagName] route
     router.push(`/search/${tagName}`);
   };
 
@@ -236,8 +234,8 @@ export default function PhotoPage() {
             <Image
               src={photo.urls.regular}
               alt={photo.alt_description || "Image"}
-              width={isPortrait ? 500 : 800} // Adjust the width based on portrait/landscape
-              height={isPortrait ? 700 : 500} // Adjust the height based on portrait/landscape
+              width={isPortrait ? 500 : 800}
+              height={isPortrait ? 700 : 500}
               className="rounded-[8px] object-cover"
               onClick={() => setIsFullScreen(true)}
             />
@@ -259,12 +257,10 @@ export default function PhotoPage() {
                 {photo.user.name}
               </p>
             </div>
-            {/* Published Date */}
             <p className="text-gray-100 text-sm mb-2">
               Published on {format(new Date(photo.created_at), "MMMM dd, yyyy")}
             </p>
 
-            {/* Buttons */}
             <div className="flex justify-start items-center gap-4">
               <Button
                 onClick={() => setShowCollectionModal(true)}
@@ -311,7 +307,6 @@ export default function PhotoPage() {
               </div>
             </div>
             <div className="mt-4 flex flex-col">
-              {/* Show Image Location */}
               {photo.location?.name && (
                 <p className="text-gray-100 mb-2">
                   <FontAwesomeIcon
@@ -348,7 +343,7 @@ export default function PhotoPage() {
                     <span
                       key={tag.title}
                       className="text-gray-200 bg-secondary-100 px-3 py-1 text-sm rounded-[4px] cursor-pointer"
-                      onClick={() => handleTagClick(tag.title)} // Attach click handler
+                      onClick={() => handleTagClick(tag.title)}
                     >
                       {capitalizeFirstLetter(tag.title)}
                     </span>
@@ -360,7 +355,7 @@ export default function PhotoPage() {
         </div>
         <div className="w-full"></div>
 
-        {/* Collection Modal (Unchanged) */}
+        {/* Collection Modal */}
         {showCollectionModal && (
           <div className="fixed inset-0 bg-gray-100 bg-opacity-50 flex justify-center items-center z-20">
             <div className="bg-white p-8 rounded-[6px] w-2/5 h-max">
