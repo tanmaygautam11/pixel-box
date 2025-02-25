@@ -1,8 +1,10 @@
-import React from 'react'
+import CollectionGallery from "@/components/CollectionGallery";
 
 const Collections = () => {
   return (
-    <div>Collections</div>
+    <div className="px-16 absolute top-24 w-full">
+      <CollectionGallery />
+    </div>
   )
 }
 

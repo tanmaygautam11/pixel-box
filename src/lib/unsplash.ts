@@ -1,4 +1,5 @@
 import { UnsplashImage } from "@/components/ImageGallery";
+import { UnsplashCollection } from "@/types/unsplash";
 
 const UNSPLASH_ACCESS_KEY = process.env.NEXT_PUBLIC_UNSPLASH_ACCESS_KEY;
 
@@ -116,4 +117,87 @@ export const fetchPhotoDetails = async (photoId: string) => {
   }
 };
 
+export const fetchCollections = async (
+  count: number = 30,
+  page: number = 1,
+  existingCollections: UnsplashCollection[] = []
+): Promise<UnsplashCollection[] | null> => {
+  try {
+    const url = `https://api.unsplash.com/collections?per_page=${count}&page=${page}`;
+
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Client-ID ${UNSPLASH_ACCESS_KEY}`,
+        Accept: "application/json",
+        "Accept-Version": "v1", 
+      },
+    });
+
+    // Handling rate limit exceeded error
+    if (response.status === 403) {
+      throw new Error("Rate limit exceeded. Please try again later.");
+    }
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Failed to fetch collections from Unsplash: ${errorText}`
+      );
+    }
+
+    const data = await response.json();
+
+    // Create a Set of existing collection IDs to avoid duplicates
+    const existingIds = new Set(existingCollections.map((coll) => coll.id));
+
+    // Filter out any collections that have already been added
+    const uniqueCollections = data.filter(
+      (coll: UnsplashCollection) => !existingIds.has(coll.id)
+    );
+
+    return uniqueCollections;
+  } catch (error) {
+    console.error("Error fetching collections from Unsplash:", error);
+    return null; // Return null in case of error
+  }
+};
+export const fetchCollectionPhotos = async (
+  collectionId: string,
+  page: number = 1
+) => {
+  const accessKey = process.env.NEXT_PUBLIC_UNSPLASH_ACCESS_KEY;
+
+  if (!accessKey) {
+    console.error("Unsplash Access Key is missing");
+    return [];
+  }
+
+  try {
+    const response = await fetch(
+      `https://api.unsplash.com/collections/${collectionId}/photos?client_id=${accessKey}&page=${page}&per_page=30`
+    );
+
+    if (!response.ok) {
+      console.error("Unsplash API error:", response.status, await response.text());
+      return [];
+    }
+
+    const data = await response.json();
+    console.log("Fetched images:", data);
+    return data;
+  } catch (error) {
+    console.error("Error fetching collection photos:", error);
+    return [];
+  }
+};
+export const fetchCollectionDetails = async (collectionId: string) => {
+  const response = await fetch(
+    `https://api.unsplash.com/collections/${collectionId}?client_id=${UNSPLASH_ACCESS_KEY}`
+  );
+  const data = await response.json();
+  return {
+    title: data.title,
+    total_photos: data.total_photos,
+  };
+};
 
