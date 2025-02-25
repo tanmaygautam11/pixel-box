@@ -67,6 +67,7 @@ const ImageGallery = ({
             >
               <Link href={`/photo/${img.id}`} className="block w-full h-full">
                 <div className="relative w-full h-full">
+                  {/* Image */}
                   <Image
                     src={imageUrl}
                     alt={img.alt_description || "Image from Unsplash"}
@@ -80,6 +81,11 @@ const ImageGallery = ({
                     }}
                     className="transition-all duration-300 transform group-hover:scale-105"
                   />
+
+                  {/* Black Overlay on Hover */}
+                  <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+
+                  {/* Profile Image & Name */}
                   <div className="flex items-center absolute bottom-0 left-0 w-full bg-gradient-to-t from-black via-transparent to-transparent text-white p-2 text-sm opacity-0 group-hover:opacity-100 transition-opacity">
                     <div className="w-8 h-8 mr-2 rounded-full overflow-hidden">
                       <Image
@@ -95,15 +101,15 @@ const ImageGallery = ({
                 </div>
               </Link>
 
-              {showDeleteButton &&
-                onDeleteImage && (
-                  <button
-                    onClick={() => onDeleteImage(img.id)}
-                    className="absolute top-2 right-2 text-secondary-100 rounded-full p-2 hover:text-white"
-                  >
-                    <FontAwesomeIcon icon={faTrash} size="lg" />
-                  </button>
-                )}
+              {/* Delete Button */}
+              {showDeleteButton && onDeleteImage && (
+                <button
+                  onClick={() => onDeleteImage(img.id)}
+                  className="absolute top-2 right-2 text-secondary-100 p-2 opacity-0 group-hover:opacity-100 transition-opacity hover:text-white"
+                >
+                  <FontAwesomeIcon icon={faTrash} size="sm" />
+                </button>
+              )}
             </div>
           );
         })}
