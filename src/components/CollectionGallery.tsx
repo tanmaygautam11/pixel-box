@@ -51,14 +51,15 @@ const CollectionGallery = () => {
       {loading ? (
         <p>Loading...</p>
       ) : (
-        <div className="grid grid-cols-3 gap-8 my-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 my-8">
           {collections.map((coll) => (
             <CollectionCard
-              key={`${coll.id}-${coll.title}`}
+              key={coll.id}
               id={coll.id}
               title={coll.title}
               coverPhotoUrl={coll.cover_photo.urls.small}
               totalPhotos={coll.total_photos}
+              href={`/collection/${coll.id}`}
             />
           ))}
         </div>

@@ -1,34 +1,41 @@
 import React from "react";
 import Image from "next/image";
-import Link from "next/link";
 
 export interface CollectionCardProps {
   id: string;
   title: string;
-  coverPhotoUrl: string;
+  coverPhotoUrl: string; // This should now be a full URL or Unsplash URL object
   totalPhotos: number;
+  href?: string; // Add a href prop to link to the collection page
+  onClick?: () => void; // Triggered when the card is clicked
 }
 
 const CollectionCard: React.FC<CollectionCardProps> = ({
-  id,
   title,
   coverPhotoUrl,
   totalPhotos,
+  onClick,
+  href
 }) => {
   return (
-    <Link href={`/collection/${id}`} passHref>
-      <div key={`${id}-${title}`} className="cursor-pointer">
+    <div
+      className="cursor-pointer bg-white"
+      onClick={onClick} // Trigger the onClick event to select the collection
+    >
+      <a href={href}>
         <Image
-          src={coverPhotoUrl}
+          src={coverPhotoUrl} // Use the full URL directly here
           alt={title}
           width={500}
           height={300}
-          className="object-cover w-full h-72 rounded-[6px] shadow-lg mb-4"
+          className="object-cover w-full h-72 rounded-[6px]"
         />
-        <h2 className="text-xl font-semibold text-black-100">{title}</h2>
-        <h4 className="text-gray-100 text-md">{totalPhotos} photos</h4>
+      </a>
+      <div className="mt-3">
+        <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
+        <h4 className="text-gray-500 text-sm">{totalPhotos} photos</h4>
       </div>
-    </Link>
+    </div>
   );
 };
 
