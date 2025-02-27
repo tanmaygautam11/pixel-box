@@ -4,35 +4,35 @@ import { fetchCollections } from "@/lib/unsplash";
 import CollectionCard from "@/components/CollectionCard";
 import { UnsplashCollection } from "@/types/unsplash";
 import { useRouter } from "next/navigation";
+import Loader from "./Loader";
 
 const CollectionGallery = () => {
   const [collections, setCollections] = useState<UnsplashCollection[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [page, setPage] = useState<number>(1);
   const router = useRouter();
-  
 
   useEffect(() => {
     const loadCollections = async () => {
+      setLoading(true);
       const newCollections = await fetchCollections(12, page, collections);
 
       if (newCollections) {
         setCollections((prevCollections) => {
           const updatedCollections = [...prevCollections, ...newCollections];
-
           const uniqueCollections = Array.from(
             new Map(updatedCollections.map((coll) => [coll.id, coll])).values()
           );
-
           return uniqueCollections;
         });
       }
 
-      setLoading(false);
+      setTimeout(() => setLoading(false), 1000);
     };
 
     loadCollections();
-  }, [page, collections]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page]);
 
   return (
     <div>
@@ -51,7 +51,9 @@ const CollectionGallery = () => {
         </p>
       </div>
       {loading ? (
-        <p>Loading...</p>
+        <div className="h-[60vh]">
+          <Loader />
+        </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 my-8">
           {collections.map((coll) => (
@@ -66,6 +68,8 @@ const CollectionGallery = () => {
           ))}
         </div>
       )}
+      {!loading && (
+
       <div className="flex justify-center">
         <button
           onClick={() => setPage(page + 1)}
@@ -74,6 +78,7 @@ const CollectionGallery = () => {
           Load More
         </button>
       </div>
+      )}
     </div>
   );
 };

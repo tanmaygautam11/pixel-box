@@ -8,6 +8,8 @@ import CollectionCard from "@/components/CollectionCard";
 import { toast } from "sonner";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
+import Loader from "@/components/Loader"; // Import the Loader component
+
 const placeholderImage =
   "https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM=";
 
@@ -22,9 +24,10 @@ export default function MyCollections() {
 
   const [collections, setCollections] = useState<Collection[]>([]);
   const [coverPhotos, setCoverPhotos] = useState<Record<string, string>>({});
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); // Track loading state
   const [showCollectionModal, setShowCollectionModal] = useState(false);
   const [newCollectionName, setNewCollectionName] = useState("");
+  const [showLoader, setShowLoader] = useState(true); // Track loader visibility
 
   useEffect(() => {
     if (!session?.user?.id) return;
@@ -68,11 +71,13 @@ export default function MyCollections() {
         console.error("Error fetching collections:", error);
       } finally {
         setIsLoading(false);
+        setShowLoader(false); // Hide loader after loading finishes
       }
     };
 
     fetchCollections();
   }, [session]);
+
   const handleCreateCollection = async () => {
     if (!newCollectionName.trim()) {
       toast.error("Enter a collection name.");
@@ -101,6 +106,7 @@ export default function MyCollections() {
       toast.error("Network error: Could not create collection.");
     }
   };
+
   // Handle collection deletion
   const handleDeleteCollection = async (id: string) => {
     try {
@@ -123,8 +129,8 @@ export default function MyCollections() {
     }
   };
 
-  if (isLoading) {
-    return <div className="text-center text-gray-500">Loading...</div>;
+  if (isLoading || showLoader) {
+    return <Loader />;
   }
 
   return (
@@ -144,7 +150,7 @@ export default function MyCollections() {
                 key={collection._id}
                 id={collection._id}
                 title={collection.name}
-                coverPhotoUrl={coverImageUrl || placeholderImage  }
+                coverPhotoUrl={coverImageUrl || placeholderImage}
                 totalPhotos={collection.images.length}
                 onClick={() => router.push(`/my-collection/${collection._id}`)}
                 showDeleteButton={true}
