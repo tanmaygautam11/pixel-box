@@ -198,3 +198,22 @@ export const fetchCollectionDetails = async (collectionId: string) => {
   };
 };
 
+export const fetchLatestImages = async (
+  count: number = 30,
+  page: number = 1
+): Promise<UnsplashImage[]> => {
+  const response = await fetch(
+    `https://api.unsplash.com/photos?order_by=latest&per_page=${count}&page=${page}`,
+    {
+      headers: {
+        Authorization: `Client-ID ${UNSPLASH_ACCESS_KEY}`,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch latest images from Unsplash");
+  }
+
+  return response.json();
+};
