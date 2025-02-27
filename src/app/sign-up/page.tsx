@@ -67,10 +67,10 @@ const SignUp = () => {
     signIn(value, { callbackUrl: "/" });
   };
   return (
-    <div className="min-h-screen flex items-center justify-center bg-primary px-4 sm:px-0">
-      <Card className="w-full max-w-sm sm:max-w-md md:max-w-lg p-6 sm:p-8 shadow-lg bg-secondary rounded-[6px] border border-zinc-400">
+    <div className="min-h-screen flex items-center justify-center px-4 sm:px-0">
+      <Card className="absolute top-24 w-full max-w-sm sm:max-w-md md:max-w-xl p-6 sm:p-8 rounded-[6px] border-0">
         <CardHeader>
-          <CardTitle className="text-center text-black-100 text-2xl font-bold">
+          <CardTitle className="text-center text-black-100 text-3xl font-bold">
             Sign Up
           </CardTitle>
           <CardDescription className="text-sm text-center text-gray-100">
@@ -94,7 +94,7 @@ const SignUp = () => {
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               required
-              className="border-zinc-400 bg-primary focus:border-gray-500 focus:ring focus:ring-zinc-300 transition-all duration-200 rounded-[6px]"
+              className="border-zinc-300 bg-primary focus:border-gray-500 focus:ring focus:ring-zinc-300 transition-all duration-100 rounded-[6px] hover:border-gray-100"
             />
             <Input
               type="email"
@@ -103,7 +103,7 @@ const SignUp = () => {
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
               required
-              className="border-zinc-400 bg-primary focus:border-gray-500 focus:ring focus:ring-zinc-300 transition-all duration-200 rounded-[6px]"
+              className="border-zinc-300 bg-primary focus:border-gray-500 focus:ring focus:ring-zinc-300 transition-all duration-100 rounded-[6px] hover:border-gray-100"
             />
             <Input
               type="password"
@@ -112,7 +112,7 @@ const SignUp = () => {
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
               required
-              className="border-zinc-400 bg-primary focus:border-gray-500 focus:ring focus:ring-zinc-300 transition-all duration-300 rounded-[6px]"
+              className="border-zinc-300 bg-primary focus:border-gray-500 focus:ring focus:ring-zinc-300 transition-all duration-100 rounded-[6px] hover:border-gray-100"
             />
             <Input
               type="password"
@@ -123,10 +123,10 @@ const SignUp = () => {
                 setForm({ ...form, confirmPassword: e.target.value })
               }
               required
-              className="border-zinc-400 bg-primary focus:border-gray-500 focus:ring focus:ring-zinc-300 transition-all duration-300 rounded-[6px]"
+              className="border-zinc-300 bg-primary focus:border-gray-500 focus:ring focus:ring-zinc-300 transition-all duration-100 rounded-[6px] hover:border-gray-100"
             />
             <Button
-              className="w-full bg-black-100 hover:bg-gray-200 text-white font-semibold text-lg py-3 rounded-3xl transition-all duration-300"
+              className="w-full bg-black-100 hover:bg-gray-200 text-white font-semibold text-lg py-3 rounded-[6px] transition-all duration-300"
               size="lg"
               disabled={pending}
             >
@@ -150,7 +150,7 @@ const SignUp = () => {
               onClick={(e) => handleProvider(e, "github")}
               variant="outline"
               size="lg"
-              className="bg-gray-800 hover:bg-gray-700 text-white py-2 rounded-[6px] transition-all duration-300 border-zinc-400"
+              className="bg-black-100 hover:bg-gray-200 text-white py-2 rounded-[6px] transition-all duration-300 border-zinc-300"
             >
               <FaGithub className="size-6" />
               Sign up with GitHub
