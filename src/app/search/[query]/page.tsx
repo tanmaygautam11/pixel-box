@@ -95,12 +95,7 @@ const SearchPage = () => {
         </div>
       </div>
 
-      {loading ? (
-        <div className="flex justify-center items-center space-x-2">
-          <div className="animate-spin border-4 border-t-4 border-black-100 rounded-full w-12 h-12"></div>
-          <p>Loading...</p>
-        </div>
-      ) : images.length === 0 ? (
+      {!loading && images.length === 0 ? (
         <p className="text-center text-gray-500">
           No results found for {decodedQuery}
         </p>
