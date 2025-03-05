@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import ImageGallery from "@/components/ImageGallery";
 import { UnsplashImage } from "@/components/ImageGallery";
 import { fetchLatestImages } from "@/lib/unsplash";
-import Loader from "@/components/Loader";
 
 const Latest = () => {
   const [images, setImages] = useState<UnsplashImage[]>([]);
@@ -45,19 +44,22 @@ const Latest = () => {
   return (
     <div className="container absolute top-24 mx-auto px-4">
       <h1 className="text-[42px] gradient-text text-center">Latest Images</h1>
-      {isLoading ? (
-        <Loader />
-      ) : (
-        <div className="py-8">
+      <div className="py-8">
+        {!isLoading && images.length > 0 ? (
           <ImageGallery
             images={images}
             onLoadMore={loadMoreImages}
             isLoadingMore={isLoadingMore}
           />
-        </div>
-      )}
+        ) : (
+          !isLoading && (
+            <p className="text-center text-gray-500">No images available.</p>
+          )
+        )}
+      </div>
     </div>
   );
+
 };
 
 export default Latest;

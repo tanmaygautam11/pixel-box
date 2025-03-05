@@ -45,7 +45,7 @@ const ImageGallery = ({
       if (images.length > 0) {
         setIsLoading(false);
       }
-    }, 1000);
+    }, 200);
 
     return () => clearTimeout(timer);
   }, [images]);

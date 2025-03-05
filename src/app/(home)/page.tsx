@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import Home from "./Home";
 import Landing from "./Landing";
-import Loader from "@/components/Loader"; // Import the Loader component
+import Loader from "@/components/Loader";
 
 const Page = () => {
   const { data: session, status } = useSession();
@@ -12,10 +12,10 @@ const Page = () => {
 
   useEffect(() => {
     const loaderTimeout = setTimeout(() => {
-      setShowLoader(false); // Hide loader after 1 second
-    }, 1000);
+      setShowLoader(false);
+    }, 500);
 
-    return () => clearTimeout(loaderTimeout); // Clean up the timeout
+    return () => clearTimeout(loaderTimeout);
   }, []);
 
   if (status === "loading" || showLoader) {

@@ -27,14 +27,13 @@ const CollectionCard: React.FC<CollectionCardProps> = ({
   const handleDelete = async (event: React.MouseEvent) => {
     event.stopPropagation();
     if (onDeleteCollection) {
-      await onDeleteCollection(id);
+     onDeleteCollection(id);
     }
   };
 
   return (
     <div className="cursor-pointer bg-white relative group" onClick={onClick}>
       <a>
-        {/* Image with hover effect */}
         <div className="relative w-full h-72 group">
           <Image
             src={coverPhotoUrl}

@@ -18,7 +18,6 @@ export async function PUT(req: NextRequest) {
 
     const { collectionId, imageId } = await req.json();
 
-    // Ensure collectionId and imageId are provided
     if (!collectionId || !imageId) {
       return NextResponse.json(
         { message: "Collection ID and image ID are required" },
@@ -40,13 +39,11 @@ export async function PUT(req: NextRequest) {
     const userId = new mongoose.Types.ObjectId(session.user.id);
     const collectionObjectId = new mongoose.Types.ObjectId(collectionId);
 
-    // Find the collection in the database
     const collection = await Collection.findOne({
       _id: collectionObjectId,
       userId,
     });
 
-    // If collection not found
     if (!collection) {
       return NextResponse.json(
         { message: "Collection not found" },
@@ -56,7 +53,6 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    // Ensure the image isn't already added to the collection
     if (collection.images.includes(imageId)) {
       return NextResponse.json(
         {
@@ -66,7 +62,6 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    // Add the image ID to the collection
     collection.images.push(imageId);
     await collection.save();
 

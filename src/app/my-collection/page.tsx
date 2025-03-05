@@ -8,7 +8,7 @@ import CollectionCard from "@/components/CollectionCard";
 import { toast } from "sonner";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
-import Loader from "@/components/Loader"; // Import the Loader component
+import Loader from "@/components/Loader";
 
 const placeholderImage =
   "https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM=";
@@ -24,10 +24,10 @@ export default function MyCollections() {
 
   const [collections, setCollections] = useState<Collection[]>([]);
   const [coverPhotos, setCoverPhotos] = useState<Record<string, string>>({});
-  const [isLoading, setIsLoading] = useState(true); // Track loading state
+  const [isLoading, setIsLoading] = useState(true);
   const [showCollectionModal, setShowCollectionModal] = useState(false);
   const [newCollectionName, setNewCollectionName] = useState("");
-  const [showLoader, setShowLoader] = useState(true); // Track loader visibility
+  const [showLoader, setShowLoader] = useState(true);
 
   useEffect(() => {
     if (!session?.user?.id) return;
@@ -71,41 +71,46 @@ export default function MyCollections() {
         console.error("Error fetching collections:", error);
       } finally {
         setIsLoading(false);
-        setShowLoader(false); // Hide loader after loading finishes
+        setShowLoader(false);
       }
     };
 
     fetchCollections();
   }, [session]);
 
-  const handleCreateCollection = async () => {
-    if (!newCollectionName.trim()) {
-      toast.error("Enter a collection name.");
-      return;
+const handleCreateCollection = async () => {
+  if (!newCollectionName.trim()) {
+    toast.error("Enter a collection name.");
+    return;
+  }
+
+  try {
+    const response = await fetch("/api/collections/create", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: newCollectionName }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      toast.success("Collection created!");
+      setNewCollectionName("");
+      setShowCollectionModal(false);
+
+      // Refresh the page after a short delay
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
+    } else {
+      console.error("Error creating collection:", data);
+      toast.error(`Failed to create collection: ${data.message}`);
     }
-
-    try {
-      const response = await fetch("/api/collections/create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: newCollectionName }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        toast.success("Collection created!");
-        setNewCollectionName("");
-        setShowCollectionModal(false);
-      } else {
-        console.error("Error creating collection:", data);
-        toast.error(`Failed to create collection: ${data.message}`);
-      }
-    } catch (error) {
-      console.error("Network error:", error);
-      toast.error("Network error: Could not create collection.");
-    }
-  };
+  } catch (error) {
+    console.error("Network error:", error);
+    toast.error("Network error: Could not create collection.");
+  }
+};
 
   // Handle collection deletion
   const handleDeleteCollection = async (id: string) => {
@@ -115,7 +120,6 @@ export default function MyCollections() {
       });
 
       if (response.ok) {
-        // Remove the collection from the state
         setCollections((prevCollections) =>
           prevCollections.filter((collection) => collection._id !== id)
         );
